@@ -2,17 +2,18 @@ package requests
 
 // TODO: Is not there a better way to bind data instead of using string tags?
 type SignUpRequest struct {
-	FirstName   string     `form:"firstName" binding:"required"`
-	LastName    string     `form:"lastName" binding:"required"`
+	// TODO: Handle validation for API client-sent requests.
+	// TODO: Create a custom validator for whitespace-only strings.
+	FirstName   string     `form:"firstName" binding:"required,noBlank"`
+	LastName    string     `form:"lastName" binding:"required,noBlank"`
 	Email       string     `form:"email" binding:"required,email"`
-	PhoneNumber string     `form:"phoneNumber" binding:"required,max=11"`
+	PhoneNumber string     `form:"phoneNumber" binding:"required,max=11,noBlank"`
 	CourseName  CourseName `form:"courseName" binding:"required"`
 	// TODO: Create different enums for semester number for each course
-	Semester      string        `form:"semester" binding:"required,min=1"`
+	Semester      int           `form:"semester" binding:"required,min=1,max=8"`
 	ClassSchedule ClassSchedule `form:"classSchedule" binding:"required"`
 	ClassSession  ClassSession  `form:"classSession" binding:"required"`
-	// TimeSlot      TimeSlot      `form:"timeSlot"`
-	Password string `form:"password" binding:"required"`
+	Password      string        `form:"password" binding:"required,min=8,noBlank"`
 }
 
 type CourseName string
