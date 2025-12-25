@@ -7,7 +7,7 @@ type SignUpRequest struct {
 	FirstName   string     `form:"firstName" binding:"required,noBlank"`
 	LastName    string     `form:"lastName" binding:"required,noBlank"`
 	Email       string     `form:"email" binding:"required,email"`
-	PhoneNumber string     `form:"phoneNumber" binding:"required,max=11,noBlank"`
+	PhoneNumber string     `form:"phoneNumber" binding:"required,numeric,len=11"`
 	CourseName  CourseName `form:"courseName" binding:"required"`
 	// TODO: Create different enums for semester number for each course
 	Semester      int           `form:"semester" binding:"required,min=1,max=8"`
