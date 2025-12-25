@@ -24,7 +24,18 @@ func SignUp(c *gin.Context) {
 	response := fmt.Sprintln(req.FirstName, req.LastName, req.Email, req.PhoneNumber, req.CourseName, req.ClassSchedule, req.ClassSession, req.Password)
 	response = strings.TrimSpace(response)
 
-	// TODO: Create a new student in the DB
+	{
+		// TODO: Create a new student in the DB
+		// dbConn, err := db.InitDb()
+
+		// if err != nil {
+		// 	// TODO: Return appropriate error.
+		// 	// return err
+		// 	fmt.Print("Error connecting to the db.")
+		// }
+
+		// dbConn.Exec(context.Background())
+	}
 
 	c.String(http.StatusOK, response)
 }
