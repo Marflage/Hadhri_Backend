@@ -1,17 +1,18 @@
 package handlers
 
 import (
-	"fmt"
+	"context"
+	"database/sql"
+	"errors"
+	db "hadhri/Db"
 	requests "hadhri/Requests"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func SignUp(c *gin.Context) {
-	// TODO: Validate the incoming request data.
-
 	var req requests.SignUpRequest
 
 	if err := c.ShouldBind(&req); err != nil {
@@ -21,21 +22,100 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	response := fmt.Sprintln(req.FirstName, req.LastName, req.Email, req.PhoneNumber, req.CourseName, req.ClassSchedule, req.ClassSession, req.Password)
-	response = strings.TrimSpace(response)
+	dbConn, err := db.InitDb()
 
-	{
-		// TODO: Create a new student in the DB
-		// dbConn, err := db.InitDb()
-
-		// if err != nil {
-		// 	// TODO: Return appropriate error.
-		// 	// return err
-		// 	fmt.Print("Error connecting to the db.")
-		// }
-
-		// dbConn.Exec(context.Background())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error connecting to the DB."})
+		return
 	}
 
-	c.String(http.StatusOK, response)
+	ctx := context.Background()
+
+	// TODO: Is a transaction needed here and why?
+
+	getCoursePlanIdQuery := `
+			SELECT cp.id
+			FROM course_plans cp
+					JOIN available_semesters a
+						ON cp.id = a.course_plan_id
+			WHERE course_id = $1
+			AND cp.class_schedule_id = $2
+			AND cp.class_session_id = $3
+			AND cp.is_active = TRUE
+			AND a.semester = $4
+		`
+
+	var coursePlanId int
+
+	if err := dbConn.QueryRow(
+		ctx,
+		getCoursePlanIdQuery,
+		req.CourseId,
+		req.ClassScheduleId,
+		req.ClassSessionId,
+		req.Semester,
+	).Scan(&coursePlanId); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			// TODO: Create a struct for error.
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Course plan not found."})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	insertStudentQuery := `
+			INSERT INTO students(first_name, last_name, email, phone_number, password)
+			VALUES ($1, $2, $3, $4, $5)
+			RETURNING id
+		`
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var studentId int
+
+	if err := dbConn.QueryRow(
+		ctx,
+		insertStudentQuery,
+		req.FirstName,
+		req.LastName,
+		req.Email,
+		req.PhoneNumber,
+		string(passwordHash),
+	).Scan(&studentId); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	insertEnrollmentQuery := `
+		INSERT INTO student_enrollments(student_id, course_plan_id, semester)
+		VALUES ($1, $2, $3)
+	`
+
+	commandTag, err := dbConn.Exec(
+		ctx,
+		insertEnrollmentQuery,
+		studentId,
+		coursePlanId,
+		req.Semester,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if commandTag.RowsAffected() == 1 {
+		// TODO: Create a response type and return that.
+		c.JSON(http.StatusOK, gin.H{"message": "Signed up successfully."})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "RowsAffected != 1"})
 }
