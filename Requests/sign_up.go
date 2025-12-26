@@ -6,16 +6,19 @@ import (
 )
 
 type SignUpRequest struct {
-	FirstName   string     `json:"firstName" binding:"required,noBlank"`
-	LastName    string     `json:"lastName" binding:"required,noBlank"`
-	Email       string     `json:"email" binding:"required,email"`
-	PhoneNumber string     `json:"phoneNumber" binding:"required,numeric,len=11"`
-	CourseName  CourseName `json:"courseName" binding:"required,noBlank"`
+	FirstName   string `json:"firstName" binding:"required,noBlank"`
+	LastName    string `json:"lastName" binding:"required,noBlank"`
+	Email       string `json:"email" binding:"required,email"`
+	PhoneNumber string `json:"phoneNumber" binding:"required,numeric,len=11"`
 	// TODO: Create different enums for semester number for each course
-	Semester      int           `json:"semester" binding:"required,min=1,max=8"`
-	ClassSchedule ClassSchedule `json:"classSchedule" binding:"required,noBlank"`
-	ClassSession  ClassSession  `json:"classSession" binding:"required,noBlank"`
-	Password      string        `json:"password" binding:"required,min=8,noBlank"`
+	Semester int `json:"semester" binding:"required,min=1,max=8"`
+	// CourseName  CourseName `json:"courseName" binding:"required,noBlank"`
+	// ClassSchedule   ClassSchedule `json:"classSchedule" binding:"required,noBlank"`
+	// ClassSession    ClassSession  `json:"classSession" binding:"required,noBlank"`
+	CourseId        int    `json:"courseId" binding:"required,gte=1"`
+	ClassScheduleId int    `json:"classScheduleId" binding:"required,gte=1"`
+	ClassSessionId  int    `json:"classSessionId" binding:"required,gte=1"`
+	Password        string `json:"password" binding:"required,min=8,noBlank"`
 	// TODO: Add field for location.
 }
 
@@ -25,7 +28,7 @@ type CourseName string
 const (
 	QS  CourseName = "Quranic Sciences (QS)"
 	QHD CourseName = "Quran & Hadeeth Dimensions (QHD)"
-	QR  CourseName = "Quranic Reflection (QR)"
+	QR  CourseName = "Quranic Reflections (QR)"
 	DEN CourseName = "Dars e Nizami"
 )
 
@@ -49,8 +52,8 @@ type ClassSchedule string
 
 // TODO: Find a way to synchronize reference data in the DB and the values of the enum.
 const (
-	Weekend ClassSchedule = "Weekend"
 	Weekday ClassSchedule = "Weekday"
+	Weekend ClassSchedule = "Weekend"
 )
 
 func (classSchedule *ClassSchedule) UnmarshalJSON(data []byte) error {
