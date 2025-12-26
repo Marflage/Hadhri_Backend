@@ -45,6 +45,7 @@ CREATE TABLE available_semesters
     updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     course_plan_id INT NOT NULL REFERENCES course_plans (id),
     semester       INT NOT NULL
+    UNIQUE (course_plan_id, semester)
 );
 
 ========== Transactional Tables ==========
