@@ -58,7 +58,7 @@ CREATE TABLE students
     last_name    VARCHAR(30)         NOT NULL CHECK ( LENGTH(last_name) >= 2 ),
     email        VARCHAR(100) UNIQUE NOT NULL CHECK ( email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' ),
     phone_number VARCHAR(11) UNIQUE  NOT NULL CHECK ( phone_number ~ '^[0-9]{11}$' ),
-    password     VARCHAR(50)         NOT NULL CHECK (LENGTH(password) >= 8)
+    password     VARCHAR(100)         NOT NULL CHECK (LENGTH(password) >= 8)
 );
 
 CREATE TABLE student_enrollments
