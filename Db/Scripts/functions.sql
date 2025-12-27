@@ -6,3 +6,11 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION prevent_admin_insert()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    RAISE EXCEPTION 'Insertions are not allowed in admins table';
+END;
+$$ LANGUAGE plpgsql;

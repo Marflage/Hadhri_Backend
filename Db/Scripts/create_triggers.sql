@@ -39,3 +39,15 @@ CREATE TRIGGER update_student_enrollments_updated_at
     ON student_enrollments
     FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_admins_updated_at
+    BEFORE UPDATE
+    ON admins
+    FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER admin_insert_protection
+    BEFORE INSERT
+    ON admins
+    FOR EACH ROW
+EXECUTE FUNCTION prevent_admin_insert();
