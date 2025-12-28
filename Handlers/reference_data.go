@@ -11,8 +11,6 @@ import (
 )
 
 func GetCoursePlans(c *gin.Context) {
-	// TODO: Get course-wise course plans.
-
 	conn, err := db.InitDb()
 
 	if err != nil {

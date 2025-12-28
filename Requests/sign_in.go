@@ -1,6 +1,6 @@
 package requests
 
 type SignInRequest struct {
-	Email    string `form:"email"`
-	Password string `form:"password"`
+	Email    string `json:"email" binding:"required,noBlank,email"`
+	Password string `json:"password" binding:"required,noBlank"`
 }
