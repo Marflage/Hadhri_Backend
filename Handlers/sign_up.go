@@ -6,6 +6,7 @@ import (
 	"errors"
 	db "hadhri/Db"
 	requests "hadhri/Requests"
+	responses "hadhri/Responses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,18 +15,21 @@ import (
 
 func SignUp(c *gin.Context) {
 	var req requests.SignUpRequest
+	res := &responses.ApiResponse{}
 
 	if err := c.ShouldBind(&req); err != nil {
 		// TODO: Log error
 		// TODO: Create a util to make the error messages more readable and return that.
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		res.Error = err.Error()
+		c.JSON(http.StatusBadRequest, res) //gin.H{"error": err.Error()})
 		return
 	}
 
 	dbConn, err := db.InitDb()
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error connecting to the DB."})
+		res.Error = "Error connecting to the DB."
+		c.JSON(http.StatusInternalServerError, res)
 		return
 	}
 
@@ -36,8 +40,8 @@ func SignUp(c *gin.Context) {
 	getCoursePlanIdQuery := `
 			SELECT cp.id
 			FROM course_plans cp
-					JOIN available_semesters a
-						ON cp.id = a.course_plan_id
+				JOIN available_semesters a
+					ON cp.id = a.course_plan_id
 			WHERE course_id = $1
 			AND cp.class_schedule_id = $2
 			AND cp.class_session_id = $3
@@ -57,11 +61,13 @@ func SignUp(c *gin.Context) {
 	).Scan(&coursePlanId); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			// TODO: Create a struct for error.
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Course plan not found."})
+			res.Error = "Course plan not found."
+			c.JSON(http.StatusInternalServerError, res)
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		res.Error = err.Error()
+		c.JSON(http.StatusInternalServerError, res)
 		return
 	}
 
@@ -74,7 +80,8 @@ func SignUp(c *gin.Context) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		res.Error = err.Error()
+		c.JSON(http.StatusInternalServerError, res)
 		return
 	}
 
@@ -89,7 +96,8 @@ func SignUp(c *gin.Context) {
 		req.PhoneNumber,
 		string(passwordHash),
 	).Scan(&studentId); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		res.Error = err.Error()
+		c.JSON(http.StatusInternalServerError, res)
 		return
 	}
 
@@ -107,15 +115,18 @@ func SignUp(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		res.Error = err.Error()
+		c.JSON(http.StatusInternalServerError, res)
 		return
 	}
 
 	if commandTag.RowsAffected() == 1 {
 		// TODO: Create a response type and return that.
-		c.JSON(http.StatusOK, gin.H{"message": "Signed up successfully."})
+		res.Message = "Signed up successfully."
+		c.JSON(http.StatusOK, res)
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "RowsAffected != 1"})
+	res.Error = "RowsAffected != 1"
+	c.IndentedJSON(http.StatusOK, res)
 }
