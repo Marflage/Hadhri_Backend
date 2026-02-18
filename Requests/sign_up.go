@@ -10,15 +10,15 @@ type SignUpRequest struct {
 	LastName    string `json:"lastName" binding:"required,noBlank,min=2,max=30"`
 	Email       string `json:"email" binding:"required,email"`
 	PhoneNumber string `json:"phoneNumber" binding:"required,numeric,len=11"`
-	// TODO: Create different enums for semester number for each course
-	Semester int `json:"semester" binding:"required,min=1,max=8"`
 	// CourseName  CourseName `json:"courseName" binding:"required,noBlank"`
 	// ClassSchedule   ClassSchedule `json:"classSchedule" binding:"required,noBlank"`
 	// ClassSession    ClassSession  `json:"classSession" binding:"required,noBlank"`
-	CourseId        int    `json:"courseId" binding:"required,gte=1"`
-	ClassScheduleId int    `json:"classScheduleId" binding:"required,gte=1"`
-	ClassSessionId  int    `json:"classSessionId" binding:"required,gte=1"`
-	Password        string `json:"password" binding:"required,min=8,noBlank"`
+	CourseId        int `json:"courseId" binding:"required,gte=1"`
+	ClassScheduleId int `json:"classScheduleId" binding:"required,gte=1"`
+	ClassSessionId  int `json:"classSessionId" binding:"required,gte=1"`
+	// TODO: Create different enums for semester number for each course
+	Semester int    `json:"semester" binding:"required,min=1,max=8"`
+	Password string `json:"password" binding:"required,min=8,max=30,noBlank"`
 	// TODO: Add field for location.
 }
 
