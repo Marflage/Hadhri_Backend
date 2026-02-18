@@ -6,8 +6,8 @@ import (
 )
 
 type SignUpRequest struct {
-	FirstName   string `json:"firstName" binding:"required,noBlank"`
-	LastName    string `json:"lastName" binding:"required,noBlank"`
+	FirstName   string `json:"firstName" binding:"required,noBlank,min=2,max=30"`
+	LastName    string `json:"lastName" binding:"required,noBlank,min=2,max=30"`
 	Email       string `json:"email" binding:"required,email"`
 	PhoneNumber string `json:"phoneNumber" binding:"required,numeric,len=11"`
 	// TODO: Create different enums for semester number for each course
