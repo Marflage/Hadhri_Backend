@@ -1,4 +1,4 @@
-========== Reference Tables ==========
+---------- Reference Tables ----------
 
 CREATE TABLE courses
 (
@@ -57,7 +57,7 @@ CREATE TABLE admins
     password    VARCHAR(100)        NOT NULL CHECK ( LENGTH(password) >= 8 )
 );
 
-========== Transactional Tables ==========
+---------- Transactional Tables ----------
 
 CREATE TABLE students
 (
