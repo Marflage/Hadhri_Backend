@@ -89,3 +89,15 @@ CREATE TABLE student_enrollments
     enrolled_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     semester       INT NOT NULL
 );
+
+CREATE TABLE attendance
+(
+    id             SERIAL PRIMARY KEY,
+    inserted_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    student_id     INTEGER  NOT NULL REFERENCES students (id),
+    course_plan_id INTEGER  NOT NULL REFERENCES course_plans (id),
+    date           DATE     NOT NULL,
+    status_id      SMALLINT NOT NULL REFERENCES attendance_statuses (id),
+    UNIQUE (student_id, course_plan_id, date)
+);
