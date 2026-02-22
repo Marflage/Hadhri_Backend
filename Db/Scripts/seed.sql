@@ -53,3 +53,17 @@ VALUES (2, 2, 1, TRUE);
 
 INSERT INTO course_plans(course_id, class_schedule_id, class_session_id, is_active)
 VALUES (2, 2, 2, TRUE);
+
+---------- attendance_statuses ----------
+
+INSERT INTO attendance_statuses(name)
+VALUES ('Present');
+
+INSERT INTO attendance_statuses(name)
+VALUES ('Late');
+
+INSERT INTO attendance_statuses(name)
+VALUES ('Absent');
+
+INSERT INTO attendance_statuses(name)
+VALUES ('Excused');

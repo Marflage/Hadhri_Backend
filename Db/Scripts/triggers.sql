@@ -50,4 +50,10 @@ CREATE TRIGGER admin_insert_protection
     BEFORE INSERT
     ON admins
     FOR EACH ROW
-EXECUTE FUNCTION prevent_admin_insert();
+EXECUTE FUNCTION prevent_admin_insert();    
+
+CREATE TRIGGER update_attendance_statuses_updated_at
+    BEFORE UPDATE
+    ON attendance_statuses
+    FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();

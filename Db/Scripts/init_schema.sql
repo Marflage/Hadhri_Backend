@@ -57,6 +57,14 @@ CREATE TABLE admins
     password    VARCHAR(100)        NOT NULL CHECK ( LENGTH(password) >= 8 )
 );
 
+CREATE TABLE attendance_statuses
+(
+    id          SMALLSERIAL PRIMARY KEY,
+    inserted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    name        VARCHAR(10) NOT NULL UNIQUE
+);
+
 ---------- Transactional Tables ----------
 
 CREATE TABLE students
