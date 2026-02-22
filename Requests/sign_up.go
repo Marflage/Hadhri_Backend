@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-type SignUpRequest struct {
+type SignUp struct {
 	FirstName   string `json:"firstName" binding:"required,noBlank,min=2,max=30"`
 	LastName    string `json:"lastName" binding:"required,noBlank,min=2,max=30"`
 	Email       string `json:"email" binding:"required,email"`

@@ -18,7 +18,7 @@ import (
 )
 
 func SignIn(c *gin.Context) {
-	var req requests.SignInRequest
+	var req requests.SignIn
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		// TODO: Log.

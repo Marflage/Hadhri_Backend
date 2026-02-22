@@ -14,7 +14,7 @@ import (
 )
 
 func SignUp(c *gin.Context) {
-	var req requests.SignUpRequest
+	var req requests.SignUp
 	res := &responses.ApiResponse{}
 
 	if err := c.ShouldBind(&req); err != nil {
