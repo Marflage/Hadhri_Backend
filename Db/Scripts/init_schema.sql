@@ -97,7 +97,7 @@ CREATE TABLE attendance
     update_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     student_id     INTEGER  NOT NULL REFERENCES students (id),
     course_plan_id INTEGER  NOT NULL REFERENCES course_plans (id),
-    date           DATE     NOT NULL,
+    date           DATE     NOT NULL DEFAULT CURRENT_DATE,
     status_id      SMALLINT NOT NULL REFERENCES attendance_statuses (id),
     UNIQUE (student_id, course_plan_id, date)
 );
