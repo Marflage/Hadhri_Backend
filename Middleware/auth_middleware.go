@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	constants "hadhri/Constants"
+	responses "hadhri/Responses"
 	"net/http"
 	"strings"
 
@@ -13,11 +14,14 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		res := &responses.ApiResponse{}
+
 		tokenStr := c.GetHeader(constants.AuthHeader)
 
 		if tokenStr == "" {
 			// TODO: Log.
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing authorization header."})
+			res.Error = "Missing authorization header."
+			c.AbortWithStatusJSON(http.StatusUnauthorized, res)
 			return
 		}
 
@@ -35,9 +39,12 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		if err != nil || !token.Valid {
 			if errors.Is(err, jwt.ErrTokenExpired) {
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token expired."})
+				res.Error = "Token expired."
+				c.AbortWithStatusJSON(http.StatusUnauthorized, res)
 			}
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token."})
+
+			res.Error = "Invalid token."
+			c.AbortWithStatusJSON(http.StatusUnauthorized, res)
 			return
 		}
 
