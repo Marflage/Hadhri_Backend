@@ -2,6 +2,7 @@ package main
 
 import (
 	handlers "hadhri/Handlers"
+	middleware "hadhri/Middleware"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,9 @@ func main() {
 	// Reference data routing
 	// TODO: Add authentication for this route.
 	router.GET("/course-plans", handlers.GetCoursePlans)
+
+	// TODO: Move this route behind the IP-whitelisting middleware.
+	router.POST("/log-attendance", middleware.AuthMiddleware(), handlers.LogAttendance)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("failed to run server: %v", err)
