@@ -1,5 +1,5 @@
 package requests
 
 type LogAttendance struct {
-	StudentId int `json:"studentId" binding:"required,gte=1"`
+	StudentId int `form:"studentId" binding:"gte=1"`
 }

@@ -47,7 +47,7 @@ func LogAttendance(c *gin.Context) {
 	var coursePlanId int
 
 	if err := dbConn.QueryRow(context.Background(), query, req.StudentId).
-		Scan(startTime, endTime, coursePlanId); err != nil {
+		Scan(&startTime, &endTime, &coursePlanId); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			res.Error = "Student enrollment not found."
 		}
@@ -57,23 +57,65 @@ func LogAttendance(c *gin.Context) {
 		return
 	}
 
-	startTimeComparison := time.Now().Compare(startTime)
-	endTimeComparison := time.Now().Compare(endTime)
+	existenceCheckQuery := `
+	SELECT true
+	FROM attendance
+	WHERE student_id = $1 AND course_plan_id = $2 AND date = CURRENT_DATE
+	`
+	doesExist := false
 
-	// TODO: Store this in a config file for configurability.
-	graceTime := 30
-
-	if (startTimeComparison == 0 || startTimeComparison == 1) && (endTimeComparison == 0 || endTimeComparison == -1) {
-		if time.Since(startTime) > time.Duration(graceTime) {
-			// TODO: Log late attendance.
-			logLate(dbConn, req.StudentId, coursePlanId)
+	if err := dbConn.QueryRow(context.Background(), existenceCheckQuery, req.StudentId, coursePlanId).Scan(&doesExist); err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			res.Error = err.Error()
+			c.AbortWithStatusJSON(http.StatusBadRequest, res)
+			return
 		}
-
-		// TODO: Log present attendance.
-		logPresent(dbConn, req.StudentId, coursePlanId)
 	}
 
-	// TODO: Disallow logging attendance.
+	if doesExist == true {
+		res.Error = "Attendance has already been logged."
+		c.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	now := time.Now()
+	loc := now.Location()
+	startTime = time.Date(now.Year(), now.Month(), now.Day(), startTime.Hour(), startTime.Minute(), startTime.Second(), 0, loc)
+	endTime = time.Date(now.Year(), now.Month(), now.Day(), endTime.Hour(), endTime.Minute(), endTime.Second(), 0, loc)
+
+	// TODO: Store this in a config file for configurability.
+	var graceTime float64 = 50
+
+	if (now.Equal(startTime) || now.After(startTime)) && (now.Equal(endTime) || now.Before(endTime)) {
+		var err error
+
+		if time.Since(startTime).Minutes() > graceTime {
+			err = logLate(dbConn, req.StudentId, coursePlanId)
+
+			if err != nil {
+				res.Error = err.Error()
+				c.AbortWithStatusJSON(http.StatusBadRequest, res)
+				return
+			}
+
+			res.Message = "Attendance logged successfully."
+			c.IndentedJSON(http.StatusOK, res)
+			return
+		}
+
+		err = logPresent(dbConn, req.StudentId, coursePlanId)
+
+		if err != nil {
+			res.Error = err.Error()
+			c.AbortWithStatusJSON(http.StatusBadRequest, res)
+			return
+		}
+
+		res.Message = "Attendance logged successfully."
+		c.IndentedJSON(http.StatusOK, res)
+		return
+	}
+
 	res.Error = "Class session time has not entered. Attendance logging is disabled."
 	c.AbortWithStatusJSON(http.StatusLocked, res)
 }
