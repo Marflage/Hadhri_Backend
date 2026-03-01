@@ -16,7 +16,7 @@ import (
 
 func LogAttendance(c *gin.Context) {
 	var req requests.LogAttendance
-	res := &responses.ApiResponse{}
+	res := &responses.ApiResponse[any]{}
 
 	if err := c.ShouldBindQuery(&req); err != nil {
 		res.Error = err.Error()

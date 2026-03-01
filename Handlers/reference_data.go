@@ -14,7 +14,7 @@ import (
 )
 
 func GetCoursePlans(c *gin.Context) {
-	res := &responses.ApiResponse{}
+	res := &responses.ApiResponse[responses.GetCoursePlans]{}
 
 	// TODO: Move this logic to get dbConn in a reusable method.
 	dbConn, err := db.InitDb()
