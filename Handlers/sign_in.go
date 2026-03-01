@@ -7,6 +7,7 @@ import (
 	constants "hadhri/Constants"
 	db "hadhri/Db"
 	requests "hadhri/Requests"
+	responses "hadhri/Responses"
 	"net/http"
 	"strings"
 	"time"
@@ -19,12 +20,14 @@ import (
 
 func SignIn(c *gin.Context) {
 	var req requests.SignIn
+	res := &responses.ApiResponse[string]{}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		// TODO: Log.
 		// TODO: Create a middleware that parses the errors and returns an array of error messages for readability.
 		// TODO: Find a way to set separate error messages for each violation.
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		res.Error = err.Error()
+		c.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
 
@@ -36,7 +39,8 @@ func SignIn(c *gin.Context) {
 	dbConn, err := db.InitDb()
 
 	if err != nil {
-		c.Errors.JSON()
+		res.Error = err.Error()
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 		return
 	}
 
@@ -60,17 +64,20 @@ func SignIn(c *gin.Context) {
 		if errors.Is(err, sql.ErrNoRows) {
 			if adminPassword, err = isAdmin(dbConn, ctx, req.Email); err != nil {
 				if errors.Is(err, sql.ErrNoRows) {
-					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid credentials."})
+					res.Error = "Invalid credentials."
+					c.AbortWithStatusJSON(http.StatusBadRequest, res)
 					return
 				}
 
 				// TODO: Log the actual error.
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				res.Error = err.Error()
+				c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 				return
 			}
 		} else {
 			// TODO: Log.
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			res.Error = err.Error()
+			c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 			return
 		}
 	}
@@ -85,7 +92,8 @@ func SignIn(c *gin.Context) {
 
 	if err := bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(req.Password)); err != nil {
 		// TODO: Should the message be changed to "invalid password"?
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials."})
+		res.Error = "Invalid credentials."
+		c.AbortWithStatusJSON(http.StatusUnauthorized, res)
 		return
 	}
 
@@ -93,13 +101,17 @@ func SignIn(c *gin.Context) {
 
 	if err != nil {
 		// TODO: Log.
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		res.Error = err.Error()
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 		return
 	}
 
 	// TODO: Store the student ID somewhere for the duration the backend is running.
 
-	c.String(http.StatusOK, token)
+	res.Message = "Signed in successfully."
+	res.Data = token
+
+	c.IndentedJSON(http.StatusOK, res)
 }
 
 func isAdmin(dbConn *pgx.Conn, ctx context.Context, requestedEmail string) (*string, error) {
