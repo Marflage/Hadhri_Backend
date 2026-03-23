@@ -30,6 +30,7 @@ func main() {
 	// TODO: Add authentication for this route.
 	router.GET("/course-plans", handlers.GetCoursePlans)
 
+	router.GET("/student-details", middleware.AuthMiddleware(), handlers.GetStudentDetails)
 	// TODO: Move this route behind the IP-whitelisting middleware.
 	router.POST("/log-attendance", middleware.AuthMiddleware(), handlers.LogAttendance)
 
