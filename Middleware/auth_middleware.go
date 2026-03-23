@@ -27,7 +27,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		tokenStr = strings.TrimPrefix(tokenStr, constants.BearerTokenPrefix)
 
-		claims := jwt.RegisteredClaims{}
+		claims := &jwt.RegisteredClaims{}
 
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -41,6 +41,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			if errors.Is(err, jwt.ErrTokenExpired) {
 				res.Error = "Token expired."
 				c.AbortWithStatusJSON(http.StatusUnauthorized, res)
+				return
 			}
 
 			res.Error = "Invalid token."
