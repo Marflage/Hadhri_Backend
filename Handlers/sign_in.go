@@ -20,7 +20,7 @@ import (
 
 func SignIn(c *gin.Context) {
 	var req requests.SignIn
-	res := &responses.ApiResponse[string]{}
+	res := &responses.ApiResponse[responses.SignIn]{}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		// TODO: Log.
@@ -47,20 +47,21 @@ func SignIn(c *gin.Context) {
 	ctx := context.Background()
 
 	getStudentQuery := `
-		SELECT email, password
+		SELECT id, email, password
 		FROM students
 		WHERE email = $1
 	`
 
 	var studentEmail string
 	var studentPassword string
+	var studentId int
 	var adminPassword *string
 
 	if err := dbConn.QueryRow(
 		ctx,
 		getStudentQuery,
 		req.Email,
-	).Scan(&studentEmail, &studentPassword); err != nil {
+	).Scan(&studentId, &studentEmail, &studentPassword); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			if adminPassword, err = isAdmin(dbConn, ctx, req.Email); err != nil {
 				if errors.Is(err, sql.ErrNoRows) {
@@ -109,7 +110,10 @@ func SignIn(c *gin.Context) {
 	// TODO: Store the student ID somewhere for the duration the backend is running.
 
 	res.Message = "Signed in successfully."
-	res.Data = token
+	res.Data = responses.SignIn{
+		StudentId: studentId,
+		Token:     token,
+	}
 
 	c.IndentedJSON(http.StatusOK, res)
 }

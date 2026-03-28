@@ -50,9 +50,10 @@ func LogAttendance(c *gin.Context) {
 		Scan(&startTime, &endTime, &coursePlanId); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			res.Error = "Student enrollment not found."
+		} else {
+			res.Error = err.Error()
 		}
 
-		res.Error = err.Error()
 		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 		return
 	}
