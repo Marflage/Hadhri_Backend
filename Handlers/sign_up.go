@@ -15,21 +15,22 @@ import (
 
 func SignUp(c *gin.Context) {
 	var req requests.SignUp
-	res := &responses.ApiResponse[any]{}
+	res := responses.ApiResponse[responses.SignIn]{}
 
 	if err := c.ShouldBind(&req); err != nil {
 		// TODO: Log error
 		// TODO: Create a util to make the error messages more readable and return that.
 		res.Error = err.Error()
-		c.JSON(http.StatusBadRequest, res) //gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
 
 	dbConn, err := db.InitDb()
 
 	if err != nil {
+		// TODO: Log.
 		res.Error = "Error connecting to the DB."
-		c.JSON(http.StatusInternalServerError, res)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 		return
 	}
 
@@ -60,18 +61,18 @@ func SignUp(c *gin.Context) {
 		req.Semester,
 	).Scan(&coursePlanId); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			// TODO: Create a struct for error.
+			// TODO: Log.
 			res.Error = "Course plan not found."
-			c.JSON(http.StatusInternalServerError, res)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 			return
 		}
 
 		res.Error = err.Error()
-		c.JSON(http.StatusInternalServerError, res)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 		return
 	}
 
-	insertStudentQuery := `
+	insertStudentCommand := `
 			INSERT INTO students(first_name, last_name, email, phone_number, password)
 			VALUES ($1, $2, $3, $4, $5)
 			RETURNING id
@@ -80,8 +81,9 @@ func SignUp(c *gin.Context) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 
 	if err != nil {
+		// TODO: Log.
 		res.Error = err.Error()
-		c.JSON(http.StatusInternalServerError, res)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 		return
 	}
 
@@ -89,44 +91,58 @@ func SignUp(c *gin.Context) {
 
 	if err := dbConn.QueryRow(
 		ctx,
-		insertStudentQuery,
+		insertStudentCommand,
 		req.FirstName,
 		req.LastName,
 		req.Email,
 		req.PhoneNumber,
 		string(passwordHash),
 	).Scan(&studentId); err != nil {
+		// TODO: Log.
 		res.Error = err.Error()
-		c.JSON(http.StatusInternalServerError, res)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 		return
 	}
 
-	insertEnrollmentQuery := `
+	insertEnrollmentCommand := `
 		INSERT INTO student_enrollments(student_id, course_plan_id, semester)
 		VALUES ($1, $2, $3)
 	`
 
 	commandTag, err := dbConn.Exec(
 		ctx,
-		insertEnrollmentQuery,
+		insertEnrollmentCommand,
 		studentId,
 		coursePlanId,
 		req.Semester,
 	)
 
 	if err != nil {
+		// TODO: Log.
 		res.Error = err.Error()
-		c.JSON(http.StatusInternalServerError, res)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 		return
 	}
 
-	if commandTag.RowsAffected() == 1 {
-		// TODO: Create a response type and return that.
-		res.Message = "Signed up successfully."
-		c.JSON(http.StatusOK, res)
+	if commandTag.RowsAffected() <= 0 {
+		// TODO: Log.
+		res.Error = "RowsAffected != 1"
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
 		return
 	}
 
-	res.Error = "RowsAffected != 1"
+	token, err := generateToken(req.Email)
+
+	if err != nil {
+		// TODO: Log.
+		res.Error = err.Error()
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
+		return
+	}
+
+	res.Data.StudentId = studentId
+	res.Data.Token = token
+	res.Message = "Signed up successfully."
+
 	c.IndentedJSON(http.StatusOK, res)
 }
