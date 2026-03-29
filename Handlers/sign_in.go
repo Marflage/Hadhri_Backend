@@ -20,7 +20,7 @@ import (
 
 func SignIn(c *gin.Context) {
 	var req requests.SignIn
-	res := &responses.ApiResponse[responses.SignIn]{}
+	res := responses.ApiResponse[responses.SignIn]{}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		// TODO: Log.
@@ -109,11 +109,9 @@ func SignIn(c *gin.Context) {
 
 	// TODO: Store the student ID somewhere for the duration the backend is running.
 
+	res.Data.StudentId = studentId
+	res.Data.Token = token
 	res.Message = "Signed in successfully."
-	res.Data = responses.SignIn{
-		StudentId: studentId,
-		Token:     token,
-	}
 
 	c.IndentedJSON(http.StatusOK, res)
 }
