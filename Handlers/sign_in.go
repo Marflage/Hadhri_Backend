@@ -6,6 +6,7 @@ import (
 	"errors"
 	constants "hadhri/Constants"
 	db "hadhri/Db"
+	dtos "hadhri/Dtos"
 	requests "hadhri/Requests"
 	responses "hadhri/Responses"
 	"net/http"
@@ -98,7 +99,7 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	token, err := generateToken(req.Email)
+	token, err := generateToken(studentId)
 
 	if err != nil {
 		// TODO: Log.
@@ -138,13 +139,15 @@ func isAdmin(dbConn *pgx.Conn, ctx context.Context, requestedEmail string) (*str
 	return &adminPassword, nil
 }
 
-func generateToken(requestedEmail string) (string, error) {
-	claims := jwt.RegisteredClaims{
-		Issuer:    constants.Issuer,
-		Subject:   requestedEmail,
-		Audience:  jwt.ClaimStrings{constants.Audience},
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(constants.ExpirationMinutes) * time.Minute)),
+func generateToken(studentId int) (string, error) {
+	claims := dtos.CustomClaims{
+		StudentId: studentId,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    constants.Issuer,
+			Audience:  jwt.ClaimStrings{constants.Audience},
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(constants.ExpirationMinutes) * time.Minute)),
+		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

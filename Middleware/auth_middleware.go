@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	constants "hadhri/Constants"
+	dtos "hadhri/Dtos"
 	responses "hadhri/Responses"
 	"net/http"
 	"strings"
@@ -27,7 +28,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		tokenStr = strings.TrimPrefix(tokenStr, constants.BearerTokenPrefix)
 
-		claims := &jwt.RegisteredClaims{}
+		claims := &dtos.CustomClaims{}
 
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -40,16 +41,16 @@ func AuthMiddleware() gin.HandlerFunc {
 		if err != nil || !token.Valid {
 			if errors.Is(err, jwt.ErrTokenExpired) {
 				res.Error = "Token expired."
-				c.AbortWithStatusJSON(http.StatusUnauthorized, res)
-				return
+			} else {
+				res.Error = "Invalid token."
 			}
 
-			res.Error = "Invalid token."
 			c.AbortWithStatusJSON(http.StatusUnauthorized, res)
 			return
 		}
 
-		c.Set("userEmail", claims.Subject)
+		c.Set("studentId", claims.StudentId)
+		// c.Set("userEmail", claims.Subject)
 
 		c.Next()
 	}

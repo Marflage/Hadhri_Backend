@@ -131,7 +131,7 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	token, err := generateToken(req.Email)
+	token, err := generateToken(studentId)
 
 	if err != nil {
 		// TODO: Log.
