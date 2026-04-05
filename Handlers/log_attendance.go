@@ -2,10 +2,8 @@ package handlers
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	db "hadhri/Db"
-	requests "hadhri/Requests"
 	responses "hadhri/Responses"
 	"net/http"
 	"time"
@@ -15,14 +13,10 @@ import (
 )
 
 func LogAttendance(c *gin.Context) {
-	var req requests.LogAttendance
 	res := &responses.ApiResponse[any]{}
 
-	if err := c.ShouldBindQuery(&req); err != nil {
-		res.Error = err.Error()
-		c.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
+	// TODO: Create a const for the magic string.
+	studentId := c.GetInt("studentId")
 
 	dbConn, err := db.InitDb()
 
@@ -32,23 +26,10 @@ func LogAttendance(c *gin.Context) {
 		return
 	}
 
-	query := `
-	SELECT ses.start_time, ses.end_time, cp.id
-	FROM student_enrollments se
-	INNER JOIN course_plans cp
-	ON cp.id = se.course_plan_id
-	INNER JOIN class_sessions ses
-	ON ses.id = cp.class_session_id
-	WHERE se.student_id = $1
-	`
+	result, err := getClassSessionStartAndEndTimes(studentId, dbConn)
 
-	var startTime time.Time
-	var endTime time.Time
-	var coursePlanId int
-
-	if err := dbConn.QueryRow(context.Background(), query, req.StudentId).
-		Scan(&startTime, &endTime, &coursePlanId); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
 			res.Error = "Student enrollment not found."
 		} else {
 			res.Error = err.Error()
@@ -58,22 +39,15 @@ func LogAttendance(c *gin.Context) {
 		return
 	}
 
-	existenceCheckQuery := `
-	SELECT true
-	FROM attendance
-	WHERE student_id = $1 AND course_plan_id = $2 AND date = CURRENT_DATE
-	`
-	doesExist := false
+	isAlreadyLogged, err := isAttendanceAlreadyLogged(studentId, dbConn)
 
-	if err := dbConn.QueryRow(context.Background(), existenceCheckQuery, req.StudentId, coursePlanId).Scan(&doesExist); err != nil {
-		if !errors.Is(err, sql.ErrNoRows) {
-			res.Error = err.Error()
-			c.AbortWithStatusJSON(http.StatusBadRequest, res)
-			return
-		}
+	if err != nil {
+		res.Error = err.Error()
+		c.AbortWithStatusJSON(http.StatusInternalServerError, res)
+		return
 	}
 
-	if doesExist == true {
+	if isAlreadyLogged {
 		res.Error = "Attendance has already been logged."
 		c.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
@@ -81,17 +55,20 @@ func LogAttendance(c *gin.Context) {
 
 	now := time.Now()
 	loc := now.Location()
-	startTime = time.Date(now.Year(), now.Month(), now.Day(), startTime.Hour(), startTime.Minute(), startTime.Second(), 0, loc)
-	endTime = time.Date(now.Year(), now.Month(), now.Day(), endTime.Hour(), endTime.Minute(), endTime.Second(), 0, loc)
+
+	result.ClassSessionStartTime = time.Date(now.Year(), now.Month(), now.Day(), result.ClassSessionStartTime.Hour(), result.ClassSessionStartTime.Minute(), result.ClassSessionStartTime.Second(), 0, loc)
+
+	result.ClassSessionEndTime = time.Date(now.Year(), now.Month(), now.Day(), result.ClassSessionEndTime.Hour(), result.ClassSessionEndTime.Minute(), result.ClassSessionEndTime.Second(), 0, loc)
 
 	// TODO: Store this in a config file for configurability.
-	var graceTime float64 = 50
+	var lateBuffer float64 = 50
 
-	if (now.Equal(startTime) || now.After(startTime)) && (now.Equal(endTime) || now.Before(endTime)) {
+	if (now.Equal(result.ClassSessionStartTime) || now.After(result.ClassSessionStartTime)) && (now.Equal(result.ClassSessionEndTime) || now.Before(result.ClassSessionEndTime)) {
 		var err error
 
-		if time.Since(startTime).Minutes() > graceTime {
-			err = logLate(dbConn, req.StudentId, coursePlanId)
+		// TODO: Use the Duration type for checking whether late should be logged or present.
+		if time.Since(result.ClassSessionStartTime).Minutes() > lateBuffer {
+			err = logLate(dbConn, studentId, result.CoursePlanId)
 
 			if err != nil {
 				res.Error = err.Error()
@@ -104,7 +81,7 @@ func LogAttendance(c *gin.Context) {
 			return
 		}
 
-		err = logPresent(dbConn, req.StudentId, coursePlanId)
+		err = logPresent(dbConn, studentId, result.CoursePlanId)
 
 		if err != nil {
 			res.Error = err.Error()
@@ -113,7 +90,7 @@ func LogAttendance(c *gin.Context) {
 		}
 
 		res.Message = "Attendance logged successfully."
-		c.IndentedJSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 		return
 	}
 
@@ -151,4 +128,47 @@ func logLate(dbConn *pgx.Conn, studentId int, coursePlanId int) error {
 	}
 
 	return nil
+}
+
+func getClassSessionStartAndEndTimes(studentId int, dbConn *pgx.Conn) (*queryResult, error) {
+	query := `
+	SELECT ses.start_time, ses.end_time, cp.id
+	FROM student_enrollments se
+	INNER JOIN course_plans cp
+	ON cp.id = se.course_plan_id
+	INNER JOIN class_sessions ses
+	ON ses.id = cp.class_session_id
+	WHERE se.student_id = $1
+	`
+
+	result := queryResult{}
+
+	if err := dbConn.QueryRow(context.Background(), query, studentId).
+		Scan(&result.ClassSessionStartTime, &result.ClassSessionEndTime, &result.CoursePlanId); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+// TODO: Move this in a file for reusability in the IsAttendanceLogged handler.
+func isAttendanceAlreadyLogged(studentId int, dbConn *pgx.Conn) (bool, error) {
+	query := `
+	SELECT true
+	FROM attendance
+	WHERE student_id = $1 AND date = CURRENT_DATE
+	`
+	isLogged := false
+
+	if err := dbConn.QueryRow(context.Background(), query, studentId).Scan(&isLogged); err != nil {
+		return isLogged, err
+	}
+
+	return isLogged, nil
+}
+
+type queryResult struct {
+	ClassSessionStartTime time.Time
+	ClassSessionEndTime   time.Time
+	CoursePlanId          int
 }

@@ -32,6 +32,7 @@ func main() {
 
 	router.GET("/students", middleware.AuthMiddleware(), handlers.GetStudentDetails)
 	router.GET("/student-enrollments", middleware.AuthMiddleware(), handlers.GetStudentEnrollmentDetails)
+	router.GET("/attendance-status", middleware.AuthMiddleware(), handlers.IsAttendanceLogged)
 	// TODO: Move this route behind the IP-whitelisting middleware.
 	router.POST("/log-attendance", middleware.AuthMiddleware(), handlers.LogAttendance)
 
