@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	db "hadhri/Db"
-	requests "hadhri/Requests"
-	responses "hadhri/Responses"
+	requests "hadhri/WebApi/Requests"
+	responses "hadhri/WebApi/Responses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

@@ -6,7 +6,7 @@ import (
 	"errors"
 	db "hadhri/Db"
 	querymodels "hadhri/QueryModels"
-	responses "hadhri/Responses"
+	responses "hadhri/WebApi/Responses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

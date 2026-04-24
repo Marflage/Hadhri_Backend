@@ -3,7 +3,7 @@ package handlers
 import (
 	"errors"
 	db "hadhri/Db"
-	responses "hadhri/Responses"
+	responses "hadhri/WebApi/Responses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

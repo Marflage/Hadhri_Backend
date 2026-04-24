@@ -5,8 +5,8 @@ import (
 	db "hadhri/Db"
 	dtos "hadhri/Dtos"
 	querymodels "hadhri/QueryModels"
-	responses "hadhri/Responses"
 	utils "hadhri/Utils"
+	responses "hadhri/WebApi/Responses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

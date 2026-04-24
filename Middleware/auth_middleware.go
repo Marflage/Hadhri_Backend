@@ -5,7 +5,7 @@ import (
 	"fmt"
 	constants "hadhri/Constants"
 	dtos "hadhri/Dtos"
-	responses "hadhri/Responses"
+	responses "hadhri/WebApi/Responses"
 	"net/http"
 	"strings"
 
