@@ -17,10 +17,10 @@ type addCourseRequest struct {
 // TODO: Will this stay as a general struct?
 type courseHandler struct {
 	// TODO: Should the type be a pointer?
-	uc usecases.AddCourseUseCase
+	uc usecases.AddCourse
 }
 
-func NewCourseHandler(uc usecases.AddCourseUseCase) courseHandler {
+func NewCourseHandler(uc usecases.AddCourse) courseHandler {
 	return courseHandler{uc: uc}
 }
 

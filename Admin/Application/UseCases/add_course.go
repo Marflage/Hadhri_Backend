@@ -8,18 +8,18 @@ import (
 )
 
 // TODO: Should this use case have an interface so that it can be unexported to enforce constructor invocation?
-type AddCourseUseCase struct {
+type AddCourse struct {
 	repo ports.ICourseRepo
 }
 
 // TODo: Is it necessary to return a pointer?
-func NewAddCourseUseCase(repo ports.ICourseRepo) AddCourseUseCase {
-	return AddCourseUseCase{repo: repo}
+func NewAddCourseUseCase(repo ports.ICourseRepo) AddCourse {
+	return AddCourse{repo: repo}
 }
 
 // TODO: Should the receiver be a pointer?
 // TODO: Why should error be returned from this method?
-func (uc AddCourseUseCase) Execute(ctx context.Context, cmd commands.AddCourse) error {
+func (uc AddCourse) Execute(ctx context.Context, cmd commands.AddCourse) error {
 	// TODO: Validate input/command as this method is not necessarily called only from the web API layer.
 
 	// TODO: Check for any duplicate or exisiting course with the same name.
