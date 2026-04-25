@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AddClassSessionRequest struct {
+type addClassSessionRequest struct {
 	Name      string    `json:"name" binding:"required"`
 	StartTime time.Time `json:"startTime" binding:"required"`
 	EndTime   time.Time `json:"endTime" binding:"required"`
@@ -27,7 +27,7 @@ func NewAddClassSessionHandler(uc usecases.AddClassSession) addClassSessionHandl
 }
 
 func (h addClassSessionHandler) AddClassSession(c *gin.Context) {
-	var req AddClassSessionRequest
+	var req addClassSessionRequest
 	res := responses.ApiResponse[any]{}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -38,6 +38,7 @@ func (h addClassSessionHandler) AddClassSession(c *gin.Context) {
 
 	// TODO: Validate if endTime > startTime.
 	// TODo: Is this validation even necessary as the use case will validate anyway?
+	// TODO: Can this validation be done using the binding tags?
 	if !req.EndTime.After(req.StartTime) {
 		res.Error = "End time must be after start time."
 		c.AbortWithStatusJSON(http.StatusBadRequest, res)

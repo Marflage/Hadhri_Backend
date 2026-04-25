@@ -1,11 +1,11 @@
-package entities
+package domain
 
 import "time"
 
 type CoursePlan struct {
-	Id              int
-	InsertedAt      time.Time
-	UpdatedAt       time.Time
+	id              int
+	insertedAt      time.Time
+	updatedAt       time.Time
 	CourseId        int
 	ClassScheduleId int
 	ClassSessionId  int
