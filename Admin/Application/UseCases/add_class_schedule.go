@@ -20,9 +20,5 @@ func (uc AddClassSchedule) Execute(ctx context.Context, cmd commands.AddClassSch
 		Name: cmd.Name,
 	}
 
-	if err := uc.repo.Create(ctx, classSchedule); err != nil {
-		return err
-	}
-
-	return nil
+	return uc.repo.Create(ctx, classSchedule)
 }

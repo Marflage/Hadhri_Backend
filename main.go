@@ -45,10 +45,20 @@ func main() {
 	addCourseUC := usecases.NewAddCourseUseCase(courseRepo)
 	courseHandler := webapi.NewCourseHandler(addCourseUC)
 
+	classScheduleRepo := infrastructure.NewClassScheduleRepo(pool)
+	addClassScheduleUC := usecases.NewAddClassScheduleUseCase(classScheduleRepo)
+	classScheduleHandler := webapi.NewClassScheduleHandler(addClassScheduleUC)
+
+	classSessionRepo := infrastructure.NewClassSessionRepo(pool)
+	addClassSessionUC := usecases.NewAddClassSessionUseCase(classSessionRepo)
+	classSessionHandler := webapi.NewAddClassSessionHandler(addClassSessionUC)
+
 	r := gin.Default()
 
 	// Admin endpoints
 	r.POST("/course", courseHandler.AddCourse)
+	r.POST("/class-schedule", classScheduleHandler.AddClassSchedule)
+	r.POST("/class-session", classSessionHandler.AddClassSession)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.
