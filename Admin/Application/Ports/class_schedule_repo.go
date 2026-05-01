@@ -7,4 +7,5 @@ import (
 
 type IClassScheduleRepo interface {
 	Create(ctx context.Context, classSchedule entities.ClassSchedule) error
+	GetAll(ctx context.Context) ([]entities.ClassSchedule, error)
 }
