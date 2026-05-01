@@ -42,16 +42,20 @@ func main() {
 	}
 
 	courseRepo := infrastructure.NewCourseRepo(pool)
+
 	addCourseUC := usecases.NewAddCourseUseCase(courseRepo)
-	courseHandler := webapi.NewCourseHandler(addCourseUC)
+	getAllCoursesUC := usecases.NewGetAllCoursesUseCase(courseRepo)
+
+	addCourseHandler := webapi.NewAddCourseHandler(addCourseUC)
+	getAllCoursesHandler := webapi.NewGetAllCoursesHandler(getAllCoursesUC)
 
 	classScheduleRepo := infrastructure.NewClassScheduleRepo(pool)
 	addClassScheduleUC := usecases.NewAddClassScheduleUseCase(classScheduleRepo)
-	classScheduleHandler := webapi.NewClassScheduleHandler(addClassScheduleUC)
+	addClassScheduleHandler := webapi.NewClassScheduleHandler(addClassScheduleUC)
 
 	classSessionRepo := infrastructure.NewClassSessionRepo(pool)
 	addClassSessionUC := usecases.NewAddClassSessionUseCase(classSessionRepo)
-	classSessionHandler := webapi.NewAddClassSessionHandler(addClassSessionUC)
+	addClassSessionHandler := webapi.NewAddClassSessionHandler(addClassSessionUC)
 
 	coursePlanRepo := infrastructure.NewCoursePlanRepo(pool)
 	addCoursePlanUC := usecases.NewAddCoursePlanUseCase(coursePlanRepo)
@@ -60,10 +64,13 @@ func main() {
 	r := gin.Default()
 
 	// Admin endpoints
-	r.POST("/course", courseHandler.AddCourse)
-	r.POST("/class-schedule", classScheduleHandler.AddClassSchedule)
-	r.POST("/class-session", classSessionHandler.AddClassSession)
+	r.POST("/course", addCourseHandler.AddCourse)
+	r.POST("/class-schedule", addClassScheduleHandler.AddClassSchedule)
+	r.POST("/class-session", addClassSessionHandler.AddClassSession)
 	r.POST("/course-plan", addCoursePlanHandler.AddCoursePlan)
+
+	// TODO: Should the path be plural?
+	r.GET("/courses", getAllCoursesHandler.GetAll)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.

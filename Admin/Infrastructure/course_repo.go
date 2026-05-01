@@ -5,6 +5,7 @@ import (
 	ports "hadhri/Admin/Application/Ports"
 	domain "hadhri/Admin/Domain"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -16,14 +17,28 @@ func NewCourseRepo(pool *pgxpool.Pool) ports.ICourseRepo {
 	return courseRepo{pool: pool}
 }
 
-// TODO: is it necessary for the receiver to be a pointer?
 func (r courseRepo) Create(ctx context.Context, course domain.Course) error {
-	cmd := `
+	sql := `
 		INSERT INTO courses(name)
 		VALUES ($1)
 	`
 
-	_, err := r.pool.Exec(ctx, cmd, course.Name)
+	_, err := r.pool.Exec(ctx, sql, course.Name)
 
 	return err
+}
+
+func (r courseRepo) GetAll(ctx context.Context) ([]domain.Course, error) {
+	sql := `
+		SELECT id, name
+		FROM courses
+	`
+
+	rows, err := r.pool.Query(ctx, sql)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pgx.CollectRows(rows, pgx.RowToStructByName[domain.Course])
 }

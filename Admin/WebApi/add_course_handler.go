@@ -15,16 +15,16 @@ type addCourseRequest struct {
 }
 
 // TODO: Will this stay as a general struct?
-type courseHandler struct {
+type addCourseHandler struct {
 	// TODO: Should the type be a pointer?
 	uc usecases.AddCourse
 }
 
-func NewCourseHandler(uc usecases.AddCourse) courseHandler {
-	return courseHandler{uc: uc}
+func NewAddCourseHandler(uc usecases.AddCourse) addCourseHandler {
+	return addCourseHandler{uc: uc}
 }
 
-func (h courseHandler) AddCourse(c *gin.Context) {
+func (h addCourseHandler) AddCourse(c *gin.Context) {
 	var req addCourseRequest
 	// TODO: Research for a better alternative/pattern for not having data in the response.
 	res := responses.ApiResponse[any]{}
