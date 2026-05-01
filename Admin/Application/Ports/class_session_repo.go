@@ -7,4 +7,5 @@ import (
 
 type IClassSessionRepo interface {
 	Create(ctx context.Context, classSession entities.ClassSession) error
+	GetAll(ctx context.Context) ([]entities.ClassSession, error)
 }

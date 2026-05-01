@@ -55,7 +55,9 @@ func main() {
 
 	classSessionRepo := infrastructure.NewClassSessionRepo(pool)
 	addClassSessionUC := usecases.NewAddClassSessionUseCase(classSessionRepo)
+	getAllClassSessionsUC := usecases.NewGetAllClassSessionsUseCase(classSessionRepo)
 	addClassSessionHandler := webapi.NewAddClassSessionHandler(addClassSessionUC)
+	getAllClassSessionsHandler := webapi.NewGetAllClassSessionsHandler(getAllClassSessionsUC)
 
 	coursePlanRepo := infrastructure.NewCoursePlanRepo(pool)
 	addCoursePlanUC := usecases.NewAddCoursePlanUseCase(coursePlanRepo)
@@ -72,6 +74,7 @@ func main() {
 	// TODO: Should the path be plural?
 	r.GET("/courses", getAllCoursesHandler.GetAll)
 	r.GET("/class-schedules", getAllClassSchedulesHandler.GetAll)
+	r.GET("/class-sessions", getAllClassSessionsHandler.GetAll)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.
