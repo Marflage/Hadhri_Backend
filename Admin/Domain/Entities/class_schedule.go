@@ -1,9 +1,9 @@
-package domain
+package entities
 
 import "time"
 
-type Course struct {
-	Id         int
+type ClassSchedule struct {
+	id         int
 	insertedAt time.Time
 	updatedAt  time.Time
 	Name       string

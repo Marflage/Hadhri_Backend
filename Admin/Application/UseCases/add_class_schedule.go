@@ -4,7 +4,7 @@ import (
 	"context"
 	commands "hadhri/Admin/Application/Commands"
 	ports "hadhri/Admin/Application/Ports"
-	domain "hadhri/Admin/Domain"
+	entities "hadhri/Admin/Domain/Entities"
 )
 
 type AddClassSchedule struct {
@@ -16,7 +16,7 @@ func NewAddClassScheduleUseCase(repo ports.IClassScheduleRepo) AddClassSchedule 
 }
 
 func (uc AddClassSchedule) Execute(ctx context.Context, cmd commands.AddClassSchedule) error {
-	classSchedule := domain.ClassSchedule{
+	classSchedule := entities.ClassSchedule{
 		Name: cmd.Name,
 	}
 

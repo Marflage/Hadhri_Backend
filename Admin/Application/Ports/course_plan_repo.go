@@ -2,9 +2,9 @@ package ports
 
 import (
 	"context"
-	domain "hadhri/Admin/Domain"
+	entities "hadhri/Admin/Domain/Entities"
 )
 
 type ICoursePlanRepo interface {
-	Create(ctx context.Context, entity domain.CoursePlan) error
+	Create(ctx context.Context, entity entities.CoursePlan) error
 }

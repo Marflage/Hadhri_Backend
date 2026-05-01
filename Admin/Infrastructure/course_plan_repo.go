@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"context"
 	ports "hadhri/Admin/Application/Ports"
-	domain "hadhri/Admin/Domain"
+	entities "hadhri/Admin/Domain/Entities"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -16,7 +16,7 @@ func NewCoursePlanRepo(pool *pgxpool.Pool) ports.ICoursePlanRepo {
 	return &coursePlanRepo{pool: pool}
 }
 
-func (r *coursePlanRepo) Create(ctx context.Context, entity domain.CoursePlan) error {
+func (r *coursePlanRepo) Create(ctx context.Context, entity entities.CoursePlan) error {
 	sql := `
 		INSERT INTO course_plans(course_id, class_schedule_id, class_session_id, is_active)
 		VALUES ($1, $2, $3, $4)

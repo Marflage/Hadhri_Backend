@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"context"
 	ports "hadhri/Admin/Application/Ports"
-	domain "hadhri/Admin/Domain"
+	entities "hadhri/Admin/Domain/Entities"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -16,7 +16,7 @@ func NewClassSessionRepo(pool *pgxpool.Pool) ports.IClassSessionRepo {
 	return &classSessionRepo{pool: pool}
 }
 
-func (r *classSessionRepo) Create(ctx context.Context, entity domain.ClassSession) error {
+func (r *classSessionRepo) Create(ctx context.Context, entity entities.ClassSession) error {
 	cmd := `
 		INSERT INTO class_sessions(name, start_time, end_time)
 		VALUES ($1, $2, $3);

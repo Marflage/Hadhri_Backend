@@ -2,9 +2,9 @@ package ports
 
 import (
 	"context"
-	domain "hadhri/Admin/Domain"
+	entities "hadhri/Admin/Domain/Entities"
 )
 
 type IClassSessionRepo interface {
-	Create(ctx context.Context, classSession domain.ClassSession) error
+	Create(ctx context.Context, classSession entities.ClassSession) error
 }

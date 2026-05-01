@@ -4,7 +4,7 @@ import (
 	"context"
 	commands "hadhri/Admin/Application/Commands"
 	ports "hadhri/Admin/Application/Ports"
-	domain "hadhri/Admin/Domain"
+	entities "hadhri/Admin/Domain/Entities"
 )
 
 type AddCoursePlan struct {
@@ -19,7 +19,7 @@ func (uc AddCoursePlan) Execute(ctx context.Context, cmd commands.AddCoursePlan)
 	// TODO: Validate for business rules.
 	// TODO: Check if course, class schedule, and class session with the passed IDs exist in the database.
 
-	entity := domain.CoursePlan{
+	entity := entities.CoursePlan{
 		CourseId:        cmd.CourseId,
 		ClassScheduleId: cmd.ClassScheduleId,
 		ClassSessionId:  cmd.ClassSessionId,

@@ -4,7 +4,7 @@ import (
 	"context"
 	commands "hadhri/Admin/Application/Commands"
 	ports "hadhri/Admin/Application/Ports"
-	domain "hadhri/Admin/Domain"
+	entities "hadhri/Admin/Domain/Entities"
 )
 
 // TODO: Should this use case have an interface so that it can be unexported to enforce constructor invocation?
@@ -24,7 +24,7 @@ func (uc AddCourse) Execute(ctx context.Context, cmd commands.AddCourse) error {
 
 	// TODO: Check for any duplicate or exisiting course with the same name.
 
-	course := domain.Course{Name: cmd.Name}
+	course := entities.Course{Name: cmd.Name}
 
 	if err := uc.repo.Create(ctx, course); err != nil {
 		return err

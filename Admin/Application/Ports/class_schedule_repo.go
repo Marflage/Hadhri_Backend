@@ -2,9 +2,9 @@ package ports
 
 import (
 	"context"
-	domain "hadhri/Admin/Domain"
+	entities "hadhri/Admin/Domain/Entities"
 )
 
 type IClassScheduleRepo interface {
-	Create(ctx context.Context, classSchedule domain.ClassSchedule) error
+	Create(ctx context.Context, classSchedule entities.ClassSchedule) error
 }

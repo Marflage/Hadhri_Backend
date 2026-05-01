@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"context"
 	ports "hadhri/Admin/Application/Ports"
-	domain "hadhri/Admin/Domain"
+	entities "hadhri/Admin/Domain/Entities"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -13,10 +13,10 @@ type classScheduleRepo struct {
 }
 
 func NewClassScheduleRepo(pool *pgxpool.Pool) ports.IClassScheduleRepo {
-	return &classScheduleRepo{pool: pool}
+	return classScheduleRepo{pool: pool}
 }
 
-func (r *classScheduleRepo) Create(ctx context.Context, classSchedule domain.ClassSchedule) error {
+func (r classScheduleRepo) Create(ctx context.Context, classSchedule entities.ClassSchedule) error {
 	cmd := `
 		INSERT INTO class_schedules(name)
 		VALUES ($1)
