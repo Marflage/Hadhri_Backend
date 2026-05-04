@@ -2,8 +2,8 @@ package usecases
 
 import (
 	"context"
+	dtos "hadhri/Admin/Application/Dtos"
 	ports "hadhri/Admin/Application/Ports"
-	dtos "hadhri/Admin/Domain/Dtos"
 )
 
 type GetAllClassSchedules struct {
