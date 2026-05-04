@@ -3,7 +3,7 @@ package entities
 import "time"
 
 type CoursePlan struct {
-	id              int
+	Id              int
 	insertedAt      time.Time
 	updatedAt       time.Time
 	CourseId        int

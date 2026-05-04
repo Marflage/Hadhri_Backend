@@ -61,7 +61,9 @@ func main() {
 
 	coursePlanRepo := infrastructure.NewCoursePlanRepo(pool)
 	addCoursePlanUC := usecases.NewAddCoursePlanUseCase(coursePlanRepo)
+	getAllCoursePlansUC := usecases.NewGetAllCoursePlansUseCase(coursePlanRepo)
 	addCoursePlanHandler := webapi.NewAddCoursePlanHandler(addCoursePlanUC)
+	getAllCoursePlansHandler := webapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
 	r := gin.Default()
 
@@ -75,6 +77,7 @@ func main() {
 	r.GET("/courses", getAllCoursesHandler.GetAll)
 	r.GET("/class-schedules", getAllClassSchedulesHandler.GetAll)
 	r.GET("/class-sessions", getAllClassSessionsHandler.GetAll)
+	r.GET("/admin/course-plans", getAllCoursePlansHandler.GetAll)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.
