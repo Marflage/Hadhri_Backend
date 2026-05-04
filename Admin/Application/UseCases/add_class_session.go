@@ -5,7 +5,7 @@ import (
 	"errors"
 	commands "hadhri/Admin/Application/Commands"
 	ports "hadhri/Admin/Application/Ports"
-	entities "hadhri/Admin/Domain/Entities"
+	dbmodels "hadhri/Admin/Infrastructure/DbModels"
 	"time"
 )
 
@@ -28,7 +28,7 @@ func (uc AddClassSession) Execute(ctx context.Context, cmd commands.AddClassSess
 		return errors.New("End time must be after start time.")
 	}
 
-	entity := entities.ClassSession{
+	entity := dbmodels.ClassSession{
 		Name:      cmd.Name,
 		StartTime: cmd.StartTime,
 		EndTime:   cmd.EndTime,

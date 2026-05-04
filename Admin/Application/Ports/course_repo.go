@@ -2,10 +2,10 @@ package ports
 
 import (
 	"context"
-	entities "hadhri/Admin/Domain/Entities"
+	dbmodels "hadhri/Admin/Infrastructure/DbModels"
 )
 
 type ICourseRepo interface {
-	Create(ctx context.Context, course entities.Course) error
-	GetAll(ctx context.Context) ([]entities.Course, error)
+	Create(ctx context.Context, course dbmodels.Course) error
+	GetAll(ctx context.Context) ([]dbmodels.Course, error)
 }

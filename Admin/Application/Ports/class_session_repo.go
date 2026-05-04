@@ -2,10 +2,10 @@ package ports
 
 import (
 	"context"
-	entities "hadhri/Admin/Domain/Entities"
+	dbmodels "hadhri/Admin/Infrastructure/DbModels"
 )
 
 type IClassSessionRepo interface {
-	Create(ctx context.Context, classSession entities.ClassSession) error
-	GetAll(ctx context.Context) ([]entities.ClassSession, error)
+	Create(ctx context.Context, classSession dbmodels.ClassSession) error
+	GetAll(ctx context.Context) ([]dbmodels.ClassSession, error)
 }

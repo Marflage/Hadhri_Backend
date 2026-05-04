@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"context"
 	ports "hadhri/Admin/Application/Ports"
-	entities "hadhri/Admin/Domain/Entities"
+	dbmodels "hadhri/Admin/Infrastructure/DbModels"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,7 +17,7 @@ func NewCourseRepo(pool *pgxpool.Pool) ports.ICourseRepo {
 	return courseRepo{pool: pool}
 }
 
-func (r courseRepo) Create(ctx context.Context, course entities.Course) error {
+func (r courseRepo) Create(ctx context.Context, course dbmodels.Course) error {
 	sql := `
 		INSERT INTO courses(name)
 		VALUES ($1)
@@ -28,7 +28,7 @@ func (r courseRepo) Create(ctx context.Context, course entities.Course) error {
 	return err
 }
 
-func (r courseRepo) GetAll(ctx context.Context) ([]entities.Course, error) {
+func (r courseRepo) GetAll(ctx context.Context) ([]dbmodels.Course, error) {
 	sql := `
 		SELECT id, name
 		FROM courses
@@ -40,5 +40,5 @@ func (r courseRepo) GetAll(ctx context.Context) ([]entities.Course, error) {
 		return nil, err
 	}
 
-	return pgx.CollectRows(rows, pgx.RowToStructByName[entities.Course])
+	return pgx.CollectRows(rows, pgx.RowToStructByName[dbmodels.Course])
 }

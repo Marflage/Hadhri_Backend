@@ -3,8 +3,8 @@ package infrastructure
 import (
 	"context"
 	ports "hadhri/Admin/Application/Ports"
-	entities "hadhri/Admin/Domain/Entities"
 	querymodels "hadhri/Admin/Domain/QueryModels"
+	dbmodels "hadhri/Admin/Infrastructure/DbModels"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,7 +18,7 @@ func NewCoursePlanRepo(pool *pgxpool.Pool) ports.ICoursePlanRepo {
 	return coursePlanRepo{pool: pool}
 }
 
-func (r coursePlanRepo) Create(ctx context.Context, entity entities.CoursePlan) error {
+func (r coursePlanRepo) Create(ctx context.Context, entity dbmodels.CoursePlan) error {
 	sql := `
 		INSERT INTO course_plans(course_id, class_schedule_id, class_session_id, is_active)
 		VALUES ($1, $2, $3, $4)

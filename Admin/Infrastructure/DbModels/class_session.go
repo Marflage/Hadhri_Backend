@@ -1,10 +1,12 @@
-package entities
+package dbmodels
 
 import "time"
 
-type Course struct {
+type ClassSession struct {
 	Id         int
 	insertedAt time.Time
 	updatedAt  time.Time
 	Name       string
+	StartTime  time.Time
+	EndTime    time.Time
 }

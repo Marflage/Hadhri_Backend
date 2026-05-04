@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"context"
 	ports "hadhri/Admin/Application/Ports"
-	entities "hadhri/Admin/Domain/Entities"
+	dbmodels "hadhri/Admin/Infrastructure/DbModels"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,7 +17,7 @@ func NewClassScheduleRepo(pool *pgxpool.Pool) ports.IClassScheduleRepo {
 	return classScheduleRepo{pool: pool}
 }
 
-func (r classScheduleRepo) Create(ctx context.Context, classSchedule entities.ClassSchedule) error {
+func (r classScheduleRepo) Create(ctx context.Context, classSchedule dbmodels.ClassSchedule) error {
 	sql := `
 		INSERT INTO class_schedules(name)
 		VALUES ($1)
@@ -28,7 +28,7 @@ func (r classScheduleRepo) Create(ctx context.Context, classSchedule entities.Cl
 	return err
 }
 
-func (r classScheduleRepo) GetAll(ctx context.Context) ([]entities.ClassSchedule, error) {
+func (r classScheduleRepo) GetAll(ctx context.Context) ([]dbmodels.ClassSchedule, error) {
 	sql := `
 		SELECT id, name
 		FROM class_schedules
@@ -40,5 +40,5 @@ func (r classScheduleRepo) GetAll(ctx context.Context) ([]entities.ClassSchedule
 		return nil, err
 	}
 
-	return pgx.CollectRows(rows, pgx.RowToStructByName[entities.ClassSchedule])
+	return pgx.CollectRows(rows, pgx.RowToStructByName[dbmodels.ClassSchedule])
 }

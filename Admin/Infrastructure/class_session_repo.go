@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"context"
 	ports "hadhri/Admin/Application/Ports"
-	entities "hadhri/Admin/Domain/Entities"
+	dbmodels "hadhri/Admin/Infrastructure/DbModels"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,7 +17,7 @@ func NewClassSessionRepo(pool *pgxpool.Pool) ports.IClassSessionRepo {
 	return classSessionRepo{pool: pool}
 }
 
-func (r classSessionRepo) Create(ctx context.Context, entity entities.ClassSession) error {
+func (r classSessionRepo) Create(ctx context.Context, entity dbmodels.ClassSession) error {
 	cmd := `
 		INSERT INTO class_sessions(name, start_time, end_time)
 		VALUES ($1, $2, $3);
@@ -28,7 +28,7 @@ func (r classSessionRepo) Create(ctx context.Context, entity entities.ClassSessi
 	return err
 }
 
-func (r classSessionRepo) GetAll(ctx context.Context) ([]entities.ClassSession, error) {
+func (r classSessionRepo) GetAll(ctx context.Context) ([]dbmodels.ClassSession, error) {
 	sql := `
 		SELECT id, name, start_time, end_time
 		FROM class_sessions
@@ -40,5 +40,5 @@ func (r classSessionRepo) GetAll(ctx context.Context) ([]entities.ClassSession, 
 		return nil, err
 	}
 
-	return pgx.CollectRows(rows, pgx.RowToStructByName[entities.ClassSession])
+	return pgx.CollectRows(rows, pgx.RowToStructByName[dbmodels.ClassSession])
 }

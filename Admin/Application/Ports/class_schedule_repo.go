@@ -2,10 +2,10 @@ package ports
 
 import (
 	"context"
-	entities "hadhri/Admin/Domain/Entities"
+	dbmodels "hadhri/Admin/Infrastructure/DbModels"
 )
 
 type IClassScheduleRepo interface {
-	Create(ctx context.Context, classSchedule entities.ClassSchedule) error
-	GetAll(ctx context.Context) ([]entities.ClassSchedule, error)
+	Create(ctx context.Context, classSchedule dbmodels.ClassSchedule) error
+	GetAll(ctx context.Context) ([]dbmodels.ClassSchedule, error)
 }
