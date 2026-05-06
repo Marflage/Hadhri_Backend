@@ -105,7 +105,7 @@ func SignUp(c *gin.Context) {
 	}
 
 	insertEnrollmentCommand := `
-		INSERT INTO student_enrollments(student_id, course_plan_id, semester)
+		INSERT INTO enrollments(student_id, course_plan_id, semester)
 		VALUES ($1, $2, $3)
 	`
 

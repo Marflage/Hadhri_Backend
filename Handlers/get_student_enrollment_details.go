@@ -56,7 +56,7 @@ func getStudentEnrollmentDetails(dbConn *pgx.Conn, studentId int) (*querymodels.
        s.start_time AS ClassSessionStartTime,
        s.end_time   AS ClassSessionEndTime,
        se.semester  AS Semester
-	FROM student_enrollments se
+	FROM enrollments se
 			INNER JOIN public.course_plans cp
 						ON cp.id = se.course_plan_id
 			INNER JOIN public.courses c

@@ -79,7 +79,7 @@ CREATE TABLE students
     password     VARCHAR(100)         NOT NULL CHECK (LENGTH(password) >= 8)
 );
 
-CREATE TABLE student_enrollments
+CREATE TABLE enrollments
 (
     id             SERIAL PRIMARY KEY,
     inserted_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -133,7 +133,7 @@ func logLate(dbConn *pgx.Conn, studentId int, coursePlanId int) error {
 func getClassSessionStartAndEndTimes(studentId int, dbConn *pgx.Conn) (*queryResult, error) {
 	query := `
 	SELECT ses.start_time, ses.end_time, cp.id
-	FROM student_enrollments se
+	FROM enrollments se
 	INNER JOIN course_plans cp
 	ON cp.id = se.course_plan_id
 	INNER JOIN class_sessions ses
