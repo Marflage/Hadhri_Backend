@@ -34,7 +34,5 @@ func (uc AddClassSession) Execute(ctx context.Context, cmd commands.AddClassSess
 		EndTime:   cmd.EndTime,
 	}
 
-	err := uc.repo.Create(ctx, entity)
-
-	return err
+	return uc.repo.Create(ctx, entity)
 }

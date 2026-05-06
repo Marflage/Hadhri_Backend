@@ -26,9 +26,5 @@ func (uc AddCourse) Execute(ctx context.Context, cmd commands.AddCourse) error {
 
 	course := dbmodels.Course{Name: cmd.Name}
 
-	if err := uc.repo.Create(ctx, course); err != nil {
-		return err
-	}
-
-	return nil
+	return uc.repo.Create(ctx, course)
 }

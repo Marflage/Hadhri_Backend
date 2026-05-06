@@ -65,6 +65,10 @@ func main() {
 	addCoursePlanHandler := webapi.NewAddCoursePlanHandler(addCoursePlanUC)
 	getAllCoursePlansHandler := webapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
+	studentRepo := infrastructure.NewStudentRepo(pool)
+	addStudentUC := usecases.NewAddStudentUseCase(studentRepo)
+	addStudentHandler := webapi.NewAddStudentHandler(addStudentUC)
+
 	r := gin.Default()
 
 	// Admin endpoints
@@ -78,6 +82,8 @@ func main() {
 	r.GET("/class-schedules", getAllClassSchedulesHandler.GetAll)
 	r.GET("/class-sessions", getAllClassSessionsHandler.GetAll)
 	r.GET("/admin/course-plans", getAllCoursePlansHandler.GetAll)
+
+	r.POST("/student", addStudentHandler.Handle)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.
