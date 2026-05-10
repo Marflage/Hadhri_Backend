@@ -10,8 +10,11 @@ import (
 
 type coursePlanResponse struct {
 	Id                int    `json:"id"`
+	CourseId          int    `json:"courseId"`
 	CourseName        string `json:"courseName"`
+	ClassScheduleId   int    `json:"classScheduleId"`
 	ClassScheduleName string `json:"classScheduleName"`
+	ClassSessionId    int    `json:"classSessionId"`
 	ClassSessionName  string `json:"classSessionName"`
 	IsActive          bool   `json:"isActive"`
 }
@@ -40,8 +43,11 @@ func (h getAllCoursePlansHandler) GetAll(c *gin.Context) {
 	for _, dto := range dtos {
 		coursePlan := coursePlanResponse{
 			Id:                dto.Id,
+			CourseId:          dto.CourseId,
 			CourseName:        dto.CourseName,
+			ClassScheduleId:   dto.ClassScheduleId,
 			ClassScheduleName: dto.ClassScheduleName,
+			ClassSessionId:    dto.ClassSessionId,
 			ClassSessionName:  dto.ClassSessionName,
 			IsActive:          dto.IsActive,
 		}

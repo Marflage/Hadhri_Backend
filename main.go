@@ -4,6 +4,7 @@ import (
 	"context"
 	usecases "hadhri/Admin/Application/UseCases"
 	infrastructure "hadhri/Admin/Infrastructure"
+	queryservices "hadhri/Admin/Infrastructure/QueryServices"
 	webapi "hadhri/Admin/WebApi"
 	handlers "hadhri/Handlers"
 	middleware "hadhri/Middleware"
@@ -60,8 +61,9 @@ func main() {
 	getAllClassSessionsHandler := webapi.NewGetAllClassSessionsHandler(getAllClassSessionsUC)
 
 	coursePlanRepo := infrastructure.NewCoursePlanRepo(pool)
+	coursePlanQueryService := queryservices.NewCoursePlanQueryService(pool)
 	addCoursePlanUC := usecases.NewAddCoursePlanUseCase(coursePlanRepo)
-	getAllCoursePlansUC := usecases.NewGetAllCoursePlansUseCase(coursePlanRepo)
+	getAllCoursePlansUC := usecases.NewGetAllCoursePlansUseCase(coursePlanQueryService)
 	addCoursePlanHandler := webapi.NewAddCoursePlanHandler(addCoursePlanUC)
 	getAllCoursePlansHandler := webapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
