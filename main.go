@@ -68,8 +68,11 @@ func main() {
 	getAllCoursePlansHandler := webapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
 	studentRepo := infrastructure.NewStudentRepo(pool)
+	studentQueryService := queryservices.NewStudentQueryService(pool)
 	addStudentUC := usecases.NewAddStudentUseCase(studentRepo)
 	addStudentHandler := webapi.NewAddStudentHandler(addStudentUC)
+	getStudentUC := usecases.NewGetStudentUseCase(studentQueryService)
+	getStudentHandler := webapi.NewGetStudentHandler(getStudentUC)
 
 	r := gin.Default()
 
@@ -86,6 +89,7 @@ func main() {
 	r.GET("/admin/course-plans", getAllCoursePlansHandler.GetAll)
 
 	r.POST("/student", addStudentHandler.Handle)
+	r.GET("/student", getStudentHandler.Handle)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.
