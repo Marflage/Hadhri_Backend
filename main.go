@@ -2,10 +2,15 @@ package main
 
 import (
 	"context"
-	usecases "hadhri/Admin/Application/UseCases"
+	adminUsecases "hadhri/Admin/Application/UseCases"
 	infrastructure "hadhri/Admin/Infrastructure"
-	queryservices "hadhri/Admin/Infrastructure/QueryServices"
-	webapi "hadhri/Admin/WebApi"
+	adminQueryservices "hadhri/Admin/Infrastructure/QueryServices"
+	adminWebapi "hadhri/Admin/WebApi"
+	authUsecases "hadhri/Auth/Application/Usecases"
+	queryservices "hadhri/Auth/Infrastructure/QueryServices"
+	repositories "hadhri/Auth/Infrastructure/Repositories"
+	services "hadhri/Auth/Infrastructure/Services"
+	authWebapi "hadhri/Auth/WebApi"
 	handlers "hadhri/Handlers"
 	middleware "hadhri/Middleware"
 	"log"
@@ -43,36 +48,43 @@ func main() {
 	}
 
 	courseRepo := infrastructure.NewCourseRepo(pool)
-	addCourseUC := usecases.NewAddCourseUseCase(courseRepo)
-	getAllCoursesUC := usecases.NewGetAllCoursesUseCase(courseRepo)
-	addCourseHandler := webapi.NewAddCourseHandler(addCourseUC)
-	getAllCoursesHandler := webapi.NewGetAllCoursesHandler(getAllCoursesUC)
+	addCourseUC := adminUsecases.NewAddCourseUseCase(courseRepo)
+	getAllCoursesUC := adminUsecases.NewGetAllCoursesUseCase(courseRepo)
+	addCourseHandler := adminWebapi.NewAddCourseHandler(addCourseUC)
+	getAllCoursesHandler := adminWebapi.NewGetAllCoursesHandler(getAllCoursesUC)
 
 	classScheduleRepo := infrastructure.NewClassScheduleRepo(pool)
-	addClassScheduleUC := usecases.NewAddClassScheduleUseCase(classScheduleRepo)
-	getAllClassSchedulesUC := usecases.NewGetAllClassSchedulesUseCase(classScheduleRepo)
-	addClassScheduleHandler := webapi.NewClassScheduleHandler(addClassScheduleUC)
-	getAllClassSchedulesHandler := webapi.NewGetAllClassSchedulesHandler(getAllClassSchedulesUC)
+	addClassScheduleUC := adminUsecases.NewAddClassScheduleUseCase(classScheduleRepo)
+	getAllClassSchedulesUC := adminUsecases.NewGetAllClassSchedulesUseCase(classScheduleRepo)
+	addClassScheduleHandler := adminWebapi.NewClassScheduleHandler(addClassScheduleUC)
+	getAllClassSchedulesHandler := adminWebapi.NewGetAllClassSchedulesHandler(getAllClassSchedulesUC)
 
 	classSessionRepo := infrastructure.NewClassSessionRepo(pool)
-	addClassSessionUC := usecases.NewAddClassSessionUseCase(classSessionRepo)
-	getAllClassSessionsUC := usecases.NewGetAllClassSessionsUseCase(classSessionRepo)
-	addClassSessionHandler := webapi.NewAddClassSessionHandler(addClassSessionUC)
-	getAllClassSessionsHandler := webapi.NewGetAllClassSessionsHandler(getAllClassSessionsUC)
+	addClassSessionUC := adminUsecases.NewAddClassSessionUseCase(classSessionRepo)
+	getAllClassSessionsUC := adminUsecases.NewGetAllClassSessionsUseCase(classSessionRepo)
+	addClassSessionHandler := adminWebapi.NewAddClassSessionHandler(addClassSessionUC)
+	getAllClassSessionsHandler := adminWebapi.NewGetAllClassSessionsHandler(getAllClassSessionsUC)
 
 	coursePlanRepo := infrastructure.NewCoursePlanRepo(pool)
-	coursePlanQueryService := queryservices.NewCoursePlanQueryService(pool)
-	addCoursePlanUC := usecases.NewAddCoursePlanUseCase(coursePlanRepo)
-	getAllCoursePlansUC := usecases.NewGetAllCoursePlansUseCase(coursePlanQueryService)
-	addCoursePlanHandler := webapi.NewAddCoursePlanHandler(addCoursePlanUC)
-	getAllCoursePlansHandler := webapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
+	coursePlanQueryService := adminQueryservices.NewCoursePlanQueryService(pool)
+	addCoursePlanUC := adminUsecases.NewAddCoursePlanUseCase(coursePlanRepo)
+	getAllCoursePlansUC := adminUsecases.NewGetAllCoursePlansUseCase(coursePlanQueryService)
+	addCoursePlanHandler := adminWebapi.NewAddCoursePlanHandler(addCoursePlanUC)
+	getAllCoursePlansHandler := adminWebapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
 	studentRepo := infrastructure.NewStudentRepo(pool)
-	studentQueryService := queryservices.NewStudentQueryService(pool)
-	addStudentUC := usecases.NewAddStudentUseCase(studentRepo)
-	addStudentHandler := webapi.NewAddStudentHandler(addStudentUC)
-	getStudentUC := usecases.NewGetStudentUseCase(studentQueryService)
-	getStudentHandler := webapi.NewGetStudentHandler(getStudentUC)
+	studentQueryService := adminQueryservices.NewStudentQueryService(pool)
+	addStudentUC := adminUsecases.NewAddStudentUseCase(studentRepo)
+	addStudentHandler := adminWebapi.NewAddStudentHandler(addStudentUC)
+	getStudentUC := adminUsecases.NewGetStudentUseCase(studentQueryService)
+	getStudentHandler := adminWebapi.NewGetStudentHandler(getStudentUC)
+
+	// TODO: Rename for better organization.
+	coursePlanQueryService2 := queryservices.NewCoursePlanQueryService(pool)
+	studentRepo2 := repositories.NewStudentRepo(pool)
+	tokenService := services.NewJwtService()
+	signUpUsecase := authUsecases.NewSignUpUseCase(coursePlanQueryService2, studentRepo2, tokenService)
+	signUpHandler := authWebapi.NewSignUpHandler(signUpUsecase)
 
 	r := gin.Default()
 
@@ -93,7 +105,7 @@ func main() {
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.
-	r.POST("/sign-up", handlers.SignUp)
+	r.POST("/sign-up", signUpHandler.Handle)
 	r.POST("/sign-in", handlers.SignIn)
 
 	// TODO: Create an authentication middleware.
