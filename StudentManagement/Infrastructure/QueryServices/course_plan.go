@@ -2,7 +2,7 @@ package queryservices
 
 import (
 	"context"
-	queryservices "hadhri/Auth/Application/Ports/QueryServices"
+	queryservices "hadhri/StudentManagement/Application/Ports/QueryServices"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

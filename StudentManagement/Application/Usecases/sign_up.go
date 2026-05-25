@@ -3,11 +3,11 @@ package usecases
 import (
 	"context"
 	"fmt"
-	commands "hadhri/Auth/Application/Commands"
-	queryservices "hadhri/Auth/Application/Ports/QueryServices"
-	repositories "hadhri/Auth/Application/Ports/Repositories"
-	services "hadhri/Auth/Application/Ports/Services"
-	student "hadhri/Auth/Domain/Student"
+	commands "hadhri/StudentManagement/Application/Commands"
+	queryservices "hadhri/StudentManagement/Application/Ports/QueryServices"
+	repositories "hadhri/StudentManagement/Application/Ports/Repositories"
+	services "hadhri/StudentManagement/Application/Ports/Services"
+	student "hadhri/StudentManagement/Domain/Student"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -41,7 +41,7 @@ func (uc SignUp) Execute(ctx context.Context, cmd commands.SignUp) (*string, err
 
 	if err != nil {
 		// TODO: Log.
-		return nil, fmt.Errorf("Failed to generate encrypt password: %w", err)
+		return nil, fmt.Errorf("Failed to hash password: %w", err)
 	}
 
 	studentPtr, err := student.NewStudent(cmd.FirstName, cmd.LastName, cmd.Email, cmd.PhoneNumber, string(passwordHash), coursePlanId, cmd.Semester)
@@ -55,10 +55,6 @@ func (uc SignUp) Execute(ctx context.Context, cmd commands.SignUp) (*string, err
 	if err != nil {
 		// TODO: Transform infra errors into domain ones by checking error codes.
 		return nil, fmt.Errorf("Sign up failed: %w", err)
-	}
-
-	if studentIdPtr == nil {
-		return nil, fmt.Errorf("studentIdPtr is null")
 	}
 
 	token, err := uc.tokenService.GenerateToken(*studentIdPtr)

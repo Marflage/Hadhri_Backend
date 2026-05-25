@@ -1,8 +1,8 @@
 package webapi
 
 import (
-	commands "hadhri/Auth/Application/Commands"
-	usecases "hadhri/Auth/Application/Usecases"
+	commands "hadhri/StudentManagement/Application/Commands"
+	usecases "hadhri/StudentManagement/Application/Usecases"
 	responses "hadhri/WebApi/Responses"
 	"net/http"
 

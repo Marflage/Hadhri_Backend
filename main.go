@@ -6,13 +6,13 @@ import (
 	infrastructure "hadhri/Admin/Infrastructure"
 	adminQueryservices "hadhri/Admin/Infrastructure/QueryServices"
 	adminWebapi "hadhri/Admin/WebApi"
-	authUsecases "hadhri/Auth/Application/Usecases"
-	queryservices "hadhri/Auth/Infrastructure/QueryServices"
-	repositories "hadhri/Auth/Infrastructure/Repositories"
-	services "hadhri/Auth/Infrastructure/Services"
-	authWebapi "hadhri/Auth/WebApi"
 	handlers "hadhri/Handlers"
 	middleware "hadhri/Middleware"
+	usecases "hadhri/StudentManagement/Application/Usecases"
+	queryservices "hadhri/StudentManagement/Infrastructure/QueryServices"
+	repositories "hadhri/StudentManagement/Infrastructure/Repositories"
+	services "hadhri/StudentManagement/Infrastructure/Services"
+	webapi "hadhri/StudentManagement/WebApi"
 	"log"
 	"os"
 	"time"
@@ -72,10 +72,10 @@ func main() {
 	addCoursePlanHandler := adminWebapi.NewAddCoursePlanHandler(addCoursePlanUC)
 	getAllCoursePlansHandler := adminWebapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
-	studentRepo := infrastructure.NewStudentRepo(pool)
+	studentRepo := repositories.NewStudentRepo(pool)
 	studentQueryService := adminQueryservices.NewStudentQueryService(pool)
-	addStudentUC := adminUsecases.NewAddStudentUseCase(studentRepo)
-	addStudentHandler := adminWebapi.NewAddStudentHandler(addStudentUC)
+	addStudentUC := usecases.NewAddStudentUseCase(studentRepo)
+	addStudentHandler := webapi.NewAddStudentHandler(addStudentUC)
 	getStudentUC := adminUsecases.NewGetStudentUseCase(studentQueryService)
 	getStudentHandler := adminWebapi.NewGetStudentHandler(getStudentUC)
 
@@ -83,8 +83,8 @@ func main() {
 	coursePlanQueryService2 := queryservices.NewCoursePlanQueryService(pool)
 	studentRepo2 := repositories.NewStudentRepo(pool)
 	tokenService := services.NewJwtService()
-	signUpUsecase := authUsecases.NewSignUpUseCase(coursePlanQueryService2, studentRepo2, tokenService)
-	signUpHandler := authWebapi.NewSignUpHandler(signUpUsecase)
+	signUpUsecase := usecases.NewSignUpUseCase(coursePlanQueryService2, studentRepo2, tokenService)
+	signUpHandler := webapi.NewSignUpHandler(signUpUsecase)
 
 	r := gin.Default()
 

@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"context"
-	student "hadhri/Auth/Domain/Student"
+	student "hadhri/StudentManagement/Domain/Student"
 )
 
 type IStudent interface {

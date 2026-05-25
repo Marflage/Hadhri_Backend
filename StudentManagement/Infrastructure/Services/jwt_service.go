@@ -1,9 +1,9 @@
 package services
 
 import (
-	services "hadhri/Auth/Application/Ports/Services"
-	constants "hadhri/Auth/Infrastructure/Constants"
-	dtos "hadhri/Auth/Infrastructure/Dtos"
+	services "hadhri/StudentManagement/Application/Ports/Services"
+	constants "hadhri/StudentManagement/Infrastructure/Constants"
+	dtos "hadhri/StudentManagement/Infrastructure/Dtos"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

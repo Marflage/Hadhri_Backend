@@ -2,8 +2,8 @@ package repositories
 
 import (
 	"context"
-	repositories "hadhri/Auth/Application/Ports/Repositories"
-	student "hadhri/Auth/Domain/Student"
+	repositories "hadhri/StudentManagement/Application/Ports/Repositories"
+	student "hadhri/StudentManagement/Domain/Student"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
