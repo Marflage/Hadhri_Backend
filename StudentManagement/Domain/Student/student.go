@@ -3,6 +3,8 @@ package student
 import (
 	"fmt"
 	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // TODO: Should enrollment details be set through this aggregate root?
@@ -138,7 +140,15 @@ func (s *Student) setPassword(value string) error {
 		return err
 	}
 
-	s.password = value
+	// TODO: Move this into the Student entity to enforce hashing of password.
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(value), bcrypt.DefaultCost)
+
+	if err != nil {
+		// TODO: Log.
+		return err
+	}
+
+	s.password = string(passwordHash)
 
 	return nil
 }
@@ -175,10 +185,8 @@ func validatePhoneNumber(value string) error {
 }
 
 func validatePassword(value string) error {
-	const msg string = "Password must be 8 or more characters."
-
 	if value == "" || len(value) < 8 {
-		return fmt.Errorf(msg)
+		return fmt.Errorf("Password must be 8 or more characters.")
 	}
 
 	return nil

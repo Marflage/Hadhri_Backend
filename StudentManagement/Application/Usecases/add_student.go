@@ -10,8 +10,6 @@ import (
 	repositories "hadhri/StudentManagement/Application/Ports/Repositories"
 	student "hadhri/StudentManagement/Domain/Student"
 	"math/big"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type AddStudent struct {
@@ -19,8 +17,8 @@ type AddStudent struct {
 	coursePlanQueryService queryservices.ICoursePlan
 }
 
-func NewAddStudentUseCase(repo repositories.IStudent) AddStudent {
-	return AddStudent{studentRepo: repo}
+func NewAddStudentUseCase(repo repositories.IStudent, queryService queryservices.ICoursePlan) AddStudent {
+	return AddStudent{studentRepo: repo, coursePlanQueryService: queryService}
 }
 
 func (uc AddStudent) Execute(ctx context.Context, cmd commands.AddStudent) (*dtos.StudentCredentials, error) {
@@ -36,14 +34,7 @@ func (uc AddStudent) Execute(ctx context.Context, cmd commands.AddStudent) (*dto
 		return nil, err
 	}
 
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(tempPassword), bcrypt.DefaultCost)
-
-	if err != nil {
-		// TODO: Log.
-		return nil, fmt.Errorf("Failed to hash password: %w", err)
-	}
-
-	studentPtr, err := student.NewStudent(cmd.FirstName, cmd.LastName, cmd.Email, cmd.PhoneNumber, string(passwordHash), coursePlanId, cmd.Semester)
+	studentPtr, err := student.NewStudent(cmd.FirstName, cmd.LastName, cmd.Email, cmd.PhoneNumber, string(tempPassword), coursePlanId, cmd.Semester)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create new student: %w", err)
@@ -62,7 +53,7 @@ func (uc AddStudent) Execute(ctx context.Context, cmd commands.AddStudent) (*dto
 	return &creds, nil
 }
 
-const tempPasswordLength = 16
+const tempPasswordLength = 8
 
 var passwordCharset = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*")
 

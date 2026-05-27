@@ -73,8 +73,9 @@ func main() {
 	getAllCoursePlansHandler := adminWebapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
 	studentRepo := repositories.NewStudentRepo(pool)
+	coursePlanQueryService2 := queryservices.NewCoursePlanQueryService(pool)
 	studentQueryService := adminQueryservices.NewStudentQueryService(pool)
-	addStudentUC := usecases.NewAddStudentUseCase(studentRepo)
+	addStudentUC := usecases.NewAddStudentUseCase(studentRepo, coursePlanQueryService2)
 	addStudentHandler := webapi.NewAddStudentHandler(addStudentUC)
 	getStudentUC := adminUsecases.NewGetStudentUseCase(studentQueryService)
 	getStudentHandler := adminWebapi.NewGetStudentHandler(getStudentUC)
