@@ -6,11 +6,14 @@ import (
 	infrastructure "hadhri/Admin/Infrastructure"
 	adminQueryservices "hadhri/Admin/Infrastructure/QueryServices"
 	adminWebapi "hadhri/Admin/WebApi"
-	handlers "hadhri/Handlers"
+	orphanHandlers "hadhri/Handlers"
+	usecases "hadhri/LeaveManagement/Application/UseCases"
+	repositories "hadhri/LeaveManagement/Infrastructure/Repositories"
+	handlers "hadhri/LeaveManagement/WebApi/Handlers"
 	middleware "hadhri/Middleware"
-	usecases "hadhri/StudentManagement/Application/Usecases"
+	stdntMgtUsecases "hadhri/StudentManagement/Application/Usecases"
 	queryservices "hadhri/StudentManagement/Infrastructure/QueryServices"
-	repositories "hadhri/StudentManagement/Infrastructure/Repositories"
+	stdntMgtRepositories "hadhri/StudentManagement/Infrastructure/Repositories"
 	services "hadhri/StudentManagement/Infrastructure/Services"
 	webapi "hadhri/StudentManagement/WebApi"
 	"log"
@@ -72,22 +75,27 @@ func main() {
 	addCoursePlanHandler := adminWebapi.NewAddCoursePlanHandler(addCoursePlanUC)
 	getAllCoursePlansHandler := adminWebapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
-	studentRepo := repositories.NewStudentRepo(pool)
+	studentRepo := stdntMgtRepositories.NewStudentRepo(pool)
 	coursePlanQueryService2 := queryservices.NewCoursePlanQueryService(pool)
 	studentQueryService := adminQueryservices.NewStudentQueryService(pool)
-	addStudentUC := usecases.NewAddStudentUseCase(studentRepo, coursePlanQueryService2)
+	addStudentUC := stdntMgtUsecases.NewAddStudentUseCase(studentRepo, coursePlanQueryService2)
 	addStudentHandler := webapi.NewAddStudentHandler(addStudentUC)
 	getStudentUC := adminUsecases.NewGetStudentUseCase(studentQueryService)
 	getStudentHandler := adminWebapi.NewGetStudentHandler(getStudentUC)
 
 	// TODO: Rename for better organization.
-	coursePlanQueryService2 := queryservices.NewCoursePlanQueryService(pool)
-	studentRepo2 := repositories.NewStudentRepo(pool)
+	studentRepo2 := stdntMgtRepositories.NewStudentRepo(pool)
 	tokenService := services.NewJwtService()
-	signUpUsecase := usecases.NewSignUpUseCase(coursePlanQueryService2, studentRepo2, tokenService)
+	signUpUsecase := stdntMgtUsecases.NewSignUpUseCase(coursePlanQueryService2, studentRepo2, tokenService)
 	signUpHandler := webapi.NewSignUpHandler(signUpUsecase)
 
+	leaveRequestRepo := repositories.NewLeaveRequestRepo(pool)
+	requestLeaveUseCase := usecases.NewRequestLeaveUseCase(leaveRequestRepo)
+	requestLeaveHandler := handlers.NewRequestLeaveHandler(requestLeaveUseCase)
+
 	r := gin.Default()
+
+	// TODO: Add authorization to all the endpoints except for the sign-up and sign-in ones.
 
 	// Admin endpoints
 	r.POST("/course", addCourseHandler.AddCourse)
@@ -104,22 +112,24 @@ func main() {
 	r.POST("/student", addStudentHandler.Handle)
 	r.GET("/student", getStudentHandler.Handle)
 
+	r.POST("/leaves", requestLeaveHandler.Handle)
+
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.
 	r.POST("/sign-up", signUpHandler.Handle)
-	r.POST("/sign-in", handlers.SignIn)
+	r.POST("/sign-in", orphanHandlers.SignIn)
 
 	// TODO: Create an authentication middleware.
 
 	// Reference data routing
 	// TODO: Add authentication for this route.
-	r.GET("/course-plans", handlers.GetCoursePlans)
+	r.GET("/course-plans", orphanHandlers.GetCoursePlans)
 
-	r.GET("/students", middleware.AuthMiddleware(), handlers.GetStudentDetails)
-	r.GET("/student-enrollments", middleware.AuthMiddleware(), handlers.GetStudentEnrollmentDetails)
-	r.GET("/attendance-status", middleware.AuthMiddleware(), handlers.IsAttendanceLogged)
+	r.GET("/students", middleware.AuthMiddleware(), orphanHandlers.GetStudentDetails)
+	r.GET("/student-enrollments", middleware.AuthMiddleware(), orphanHandlers.GetStudentEnrollmentDetails)
+	r.GET("/attendance-status", middleware.AuthMiddleware(), orphanHandlers.IsAttendanceLogged)
 	// TODO: Move this route behind the IP-whitelisting middleware.
-	r.POST("/log-attendance", middleware.AuthMiddleware(), handlers.LogAttendance)
+	r.POST("/log-attendance", middleware.AuthMiddleware(), orphanHandlers.LogAttendance)
 
 	if err := r.Run(); err != nil {
 		log.Fatalf("failed to run server: %v", err)
