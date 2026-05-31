@@ -159,3 +159,17 @@ func (self leaveRequest) Approve(ctx context.Context, id uint) error {
 
 	return err
 }
+
+func (self leaveRequest) Reject(ctx context.Context, id uint) error {
+	sql := `
+		UPDATE leave_requests
+		SET status = 'approved',
+			status_changed_at = CURRENT_TIMESTAMP
+		WHERE id = $1
+		AND status = 'pending'
+	`
+
+	_, err := self.pool.Exec(ctx, sql, id)
+
+	return err
+}

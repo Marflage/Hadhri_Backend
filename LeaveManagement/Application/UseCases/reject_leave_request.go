@@ -6,15 +6,15 @@ import (
 	repositories "hadhri/LeaveManagement/Application/Ports/Repositories"
 )
 
-type ApproveLeaveRequest struct {
+type RejectLeaveRequest struct {
 	repo repositories.ILeaveRequest
 }
 
-func NewApproveLeaveRequestUseCase(repo repositories.ILeaveRequest) ApproveLeaveRequest {
-	return ApproveLeaveRequest{repo: repo}
+func NewRejectLeaveRequestUseCase(repo repositories.ILeaveRequest) RejectLeaveRequest {
+	return RejectLeaveRequest{repo: repo}
 }
 
-func (self ApproveLeaveRequest) Execute(ctx context.Context, id uint) error {
+func (self RejectLeaveRequest) Execute(ctx context.Context, id uint) error {
 	exists, err := self.repo.Exists(ctx, id)
 
 	if err != nil {
@@ -25,5 +25,5 @@ func (self ApproveLeaveRequest) Execute(ctx context.Context, id uint) error {
 		return errors.New("Leave request does not exist.")
 	}
 
-	return self.repo.Approve(ctx, id)
+	return self.repo.Reject(ctx, id)
 }

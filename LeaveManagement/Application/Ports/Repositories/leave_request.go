@@ -14,4 +14,5 @@ type ILeaveRequest interface {
 	ExistsByStudentId(ctx context.Context, id uint, studentId uint) (*bool, error)
 	Exists(ctx context.Context, id uint) (*bool, error)
 	Approve(ctx context.Context, id uint) error
+	Reject(ctx context.Context, id uint) error
 }
