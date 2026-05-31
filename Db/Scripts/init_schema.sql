@@ -114,7 +114,7 @@ CREATE TABLE leave_requests
     status            TEXT      NOT NULL DEFAULT 'pending',
     status_changed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT valid_status CHECK ( status IN ('pending', 'approved', 'rejected') ),
+    CONSTRAINT valid_status CHECK ( status IN ('pending', 'approved', 'rejected', 'canceled') ),
     CONSTRAINT valid_date_range CHECK ( end_date >= start_date ),
     CONSTRAINT unique_student_leave_dates UNIQUE (student_id, start_date, end_date)
 );

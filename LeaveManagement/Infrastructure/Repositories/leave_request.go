@@ -96,3 +96,34 @@ func (self leaveRequest) Get(ctx context.Context, id uint) (*domain.LeaveRequest
 
 	return &e, nil
 }
+
+func (self leaveRequest) Cancel(ctx context.Context, id uint, studentId uint) error {
+	sql := `
+		UPDATE leave_requests
+		SET status = 'canceled',
+		status_changed_at = CURRENT_TIMESTAMP
+		WHERE id = $1
+		AND student_id = $2
+	`
+
+	_, err := self.pool.Exec(ctx, sql, id, studentId)
+
+	return err
+}
+
+func (self leaveRequest) Exists(ctx context.Context, id uint, studentId uint) (*bool, error) {
+	sql := `
+		SELECT EXISTS(SELECT 1
+				FROM leave_requests
+				WHERE id = $1
+					AND student_id = $2)
+	`
+
+	exists := false
+
+	if err := self.pool.QueryRow(ctx, sql, id, studentId).Scan(&exists); err != nil {
+		return nil, err
+	}
+
+	return &exists, nil
+}

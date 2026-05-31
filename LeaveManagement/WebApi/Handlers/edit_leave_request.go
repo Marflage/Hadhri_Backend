@@ -3,6 +3,7 @@ package handlers
 import (
 	commands "hadhri/LeaveManagement/Application/Commands"
 	usecases "hadhri/LeaveManagement/Application/UseCases"
+	webapi "hadhri/LeaveManagement/WebApi"
 	responses "hadhri/WebApi/Responses"
 	"net/http"
 	"time"
@@ -14,10 +15,6 @@ type editLeaveRequestRequest struct {
 	StartDate *time.Time `json:"startDate"`
 	EndDate   *time.Time `json:"endDate"`
 	Reason    *string    `json:"reason"`
-}
-
-type pathParam struct {
-	Id uint `uri:"id" binding:"required,gt=0"`
 }
 
 type editLeaveRequestHandler struct {
@@ -32,7 +29,7 @@ func (self editLeaveRequestHandler) Handle(c *gin.Context) {
 	var req editLeaveRequestRequest
 	res := responses.ApiResponse[any]{}
 
-	var param pathParam
+	var param webapi.PathParam
 
 	if err := c.ShouldBindUri(&param); err != nil {
 		res.Error = err.Error()

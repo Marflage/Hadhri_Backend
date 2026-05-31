@@ -89,11 +89,17 @@ func main() {
 	signUpUsecase := stdntMgtUsecases.NewSignUpUseCase(coursePlanQueryService2, studentRepo2, tokenService)
 	signUpHandler := webapi.NewSignUpHandler(signUpUsecase)
 
+	// Leave Management
 	leaveRequestRepo := repositories.NewLeaveRequestRepo(pool)
+
 	requestLeaveUseCase := usecases.NewRequestLeaveUseCase(leaveRequestRepo)
 	requestLeaveHandler := handlers.NewRequestLeaveHandler(requestLeaveUseCase)
+
 	editLeaveRequestUseCase := usecases.NewEditLeaveRequestUseCase(leaveRequestRepo)
 	editLeaveRequestHandler := handlers.NewEditLeaveHandler(editLeaveRequestUseCase)
+
+	cancelLeaveRequestUseCase := usecases.NewCancelLeaveRequestUseCase(leaveRequestRepo)
+	cancelLeaveRequestHandler := handlers.NewCancelLeaveRequestHandler(cancelLeaveRequestUseCase)
 
 	r := gin.Default()
 
@@ -116,6 +122,7 @@ func main() {
 
 	r.POST("/leaves", requestLeaveHandler.Handle)
 	r.PATCH("/leaves/:id", editLeaveRequestHandler.Handle)
+	r.PATCH("/leaves/:id/cancel", cancelLeaveRequestHandler.Handle)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.

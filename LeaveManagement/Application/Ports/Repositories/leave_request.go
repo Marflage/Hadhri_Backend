@@ -10,4 +10,6 @@ type ILeaveRequest interface {
 	AlreadyExists(ctx context.Context, entity domain.LeaveRequest) error
 	Update(ctx context.Context, entity domain.LeaveRequest) error
 	Get(ctx context.Context, id uint) (*domain.LeaveRequest, error)
+	Cancel(ctx context.Context, id uint, studentId uint) error
+	Exists(ctx context.Context, id uint, studentId uint) (*bool, error)
 }
