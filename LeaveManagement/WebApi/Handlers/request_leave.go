@@ -3,6 +3,7 @@ package handlers
 import (
 	commands "hadhri/LeaveManagement/Application/Commands"
 	usecases "hadhri/LeaveManagement/Application/UseCases"
+	constants "hadhri/LeaveManagement/WebApi/Handlers/Constants"
 	responses "hadhri/WebApi/Responses"
 	"net/http"
 	"time"
@@ -34,8 +35,7 @@ func (h requestLeaveHandler) Handle(c *gin.Context) {
 		return
 	}
 
-	// TODO: Create a const for the magic string.
-	studentId := c.GetUint("studentId")
+	studentId := c.GetUint(constants.StudentId)
 
 	cmd := commands.RequestLeave{
 		StudentId: studentId,

@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	commands "hadhri/LeaveManagement/Application/Commands"
 	repositories "hadhri/LeaveManagement/Application/Ports/Repositories"
 )
@@ -16,10 +16,10 @@ func NewEditLeaveRequestUseCase(repo repositories.ILeaveRequest) EditLeaveReques
 }
 
 func (self EditLeaveRequest) Execute(ctx context.Context, cmd commands.EditLeaveRequest) error {
-	e, err := self.repo.Get(ctx, cmd.Id)
+	e, err := self.repo.Get(ctx, cmd.Id, cmd.StudentId)
 
 	if err != nil {
-		return fmt.Errorf("Failed to retrieve leave request.")
+		return errors.New("Failed to retrieve leave request.")
 	}
 
 	if cmd.StartDate != nil || cmd.EndDate != nil {
@@ -39,7 +39,7 @@ func (self EditLeaveRequest) Execute(ctx context.Context, cmd commands.EditLeave
 	}
 
 	if e.GetStatus() != "pending" {
-		return fmt.Errorf("Leave request cannot be edited.")
+		return errors.New("Leave request cannot be edited.")
 	}
 
 	if err := self.repo.Update(ctx, *e); err != nil {

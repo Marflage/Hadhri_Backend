@@ -3,6 +3,7 @@ package handlers
 import (
 	usecases "hadhri/LeaveManagement/Application/UseCases"
 	webapi "hadhri/LeaveManagement/WebApi"
+	constants "hadhri/LeaveManagement/WebApi/Handlers/Constants"
 	responses "hadhri/WebApi/Responses"
 	"net/http"
 
@@ -29,7 +30,7 @@ func (self cancelLeaveRequestHandler) Handle(c *gin.Context) {
 	}
 
 	id := pathParam.Id
-	studentId := c.GetUint("studentId")
+	studentId := c.GetUint(constants.StudentId)
 
 	if err := self.uc.Execute(c.Request.Context(), id, studentId); err != nil {
 		res.Error = err.Error()

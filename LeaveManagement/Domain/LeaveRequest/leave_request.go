@@ -107,8 +107,7 @@ func (self *LeaveRequest) Reschedule(startDate *time.Time, endDate *time.Time) e
 }
 
 func (self *LeaveRequest) ChangeReason(reason string) error {
-	err := self.setReason(reason)
-	return err
+	return self.setReason(reason)
 }
 
 // Setters

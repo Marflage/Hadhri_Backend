@@ -64,11 +64,11 @@ func (self leaveRequest) Update(ctx context.Context, e domain.LeaveRequest) erro
 	return err
 }
 
-func (self leaveRequest) Get(ctx context.Context, id uint) (*domain.LeaveRequest, error) {
+func (self leaveRequest) Get(ctx context.Context, id uint, studentId uint) (*domain.LeaveRequest, error) {
 	sql := `
 		SELECT id, student_id, start_date, end_date, reason, status
 		FROM leave_requests
-		WHERE id = $1
+		WHERE id = $1 AND student_id = $2
 	`
 
 	type dbRow struct {
@@ -80,7 +80,7 @@ func (self leaveRequest) Get(ctx context.Context, id uint) (*domain.LeaveRequest
 		Status    string    `db:"status"`
 	}
 
-	rows, err := self.pool.Query(ctx, sql, id)
+	rows, err := self.pool.Query(ctx, sql, id, studentId)
 
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (self leaveRequest) Get(ctx context.Context, id uint) (*domain.LeaveRequest
 		return nil, err
 	}
 
-	e := domain.ReconstituteLeaveRequest(uint(row.Id), uint(row.StudentId), row.StartDate, row.EndDate, row.Reason, row.Status)
+	e := domain.ReconstituteLeaveRequest(uint(row.Id), studentId, row.StartDate, row.EndDate, row.Reason, row.Status)
 
 	return &e, nil
 }

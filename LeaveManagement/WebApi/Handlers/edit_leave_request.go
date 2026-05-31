@@ -4,6 +4,7 @@ import (
 	commands "hadhri/LeaveManagement/Application/Commands"
 	usecases "hadhri/LeaveManagement/Application/UseCases"
 	webapi "hadhri/LeaveManagement/WebApi"
+	constants "hadhri/LeaveManagement/WebApi/Handlers/Constants"
 	responses "hadhri/WebApi/Responses"
 	"net/http"
 	"time"
@@ -47,8 +48,11 @@ func (self editLeaveRequestHandler) Handle(c *gin.Context) {
 
 	// TODO: Even though validation will be identical to domain entity validation, should requests be validated anyway?
 
+	studentId := c.GetUint(constants.StudentId)
+
 	cmd := commands.EditLeaveRequest{
-		Id: id,
+		Id:        id,
+		StudentId: studentId,
 	}
 
 	if req.StartDate != nil {
