@@ -163,7 +163,7 @@ func (self leaveRequest) Approve(ctx context.Context, id uint) error {
 func (self leaveRequest) Reject(ctx context.Context, id uint) error {
 	sql := `
 		UPDATE leave_requests
-		SET status = 'approved',
+		SET status = 'rejected',
 			status_changed_at = CURRENT_TIMESTAMP
 		WHERE id = $1
 		AND status = 'pending'
