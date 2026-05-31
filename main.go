@@ -104,6 +104,9 @@ func main() {
 	approveLeaveRequestUseCase := usecases.NewApproveLeaveRequestUseCase(leaveRequestRepo)
 	approveLeaveRequestHandler := handlers.NewApproveLeaveRequestHandler(approveLeaveRequestUseCase)
 
+	rejectLeaveRequestUseCase := usecases.NewRejectLeaveRequestUseCase(leaveRequestRepo)
+	rejectLeaveRequestHandler := handlers.NewRejectLeaveRequest(rejectLeaveRequestUseCase)
+
 	r := gin.Default()
 
 	// TODO: Add authorization to all the endpoints except for the sign-up and sign-in ones.
@@ -127,6 +130,7 @@ func main() {
 	r.PATCH("/leaves/:id", editLeaveRequestHandler.Handle)
 	r.PATCH("/leaves/:id/cancel", cancelLeaveRequestHandler.Handle)
 	r.PATCH("/leaves/:id/approve", approveLeaveRequestHandler.Handle)
+	r.PATCH("/leaves/:id/reject", rejectLeaveRequestHandler.Handle)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.
