@@ -3,7 +3,7 @@ package commands
 import "time"
 
 type RequestLeave struct {
-	StudentId int
+	StudentId uint
 	StartDate time.Time
 	EndDate   time.Time
 	Reason    string

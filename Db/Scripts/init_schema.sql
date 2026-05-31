@@ -101,3 +101,31 @@ CREATE TABLE attendance
     status_id      SMALLINT NOT NULL REFERENCES attendance_statuses (id),
     UNIQUE (student_id, course_plan_id, date)
 );
+
+CREATE TABLE leave_requests
+(
+    id                SERIAL PRIMARY KEY,
+    inserted_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    student_id        INT       NOT NULL REFERENCES students (id),
+    start_date        DATE      NOT NULL,
+    end_date          DATE      NOT NULL,
+    reason            TEXT      NOT NULL,
+    status            TEXT      NOT NULL DEFAULT 'pending',
+    status_changed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT valid_status CHECK ( status IN ('pending', 'approved', 'rejected') ),
+    CONSTRAINT valid_date_range CHECK ( end_date >= start_date ),
+    CONSTRAINT unique_student_leave_dates UNIQUE (student_id, start_date, end_date)
+);
+
+CREATE INDEX idx_leave_requests_student_dates
+    ON leave_requests (student_id, start_date DESC);
+
+CREATE INDEX idx_leave_requests_admin_pending
+    ON leave_requests (status, inserted_at ASC)
+    WHERE status = 'pending';
+
+CREATE INDEX idx_leave_requests_overlap_check
+    ON leave_requests (student_id, start_date, end_date)
+    WHERE status IN ('pending', 'approved');

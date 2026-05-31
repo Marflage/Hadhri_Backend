@@ -92,6 +92,8 @@ func main() {
 	leaveRequestRepo := repositories.NewLeaveRequestRepo(pool)
 	requestLeaveUseCase := usecases.NewRequestLeaveUseCase(leaveRequestRepo)
 	requestLeaveHandler := handlers.NewRequestLeaveHandler(requestLeaveUseCase)
+	editLeaveRequestUseCase := usecases.NewEditLeaveRequestUseCase(leaveRequestRepo)
+	editLeaveRequestHandler := handlers.NewEditLeaveHandler(editLeaveRequestUseCase)
 
 	r := gin.Default()
 
@@ -113,6 +115,7 @@ func main() {
 	r.GET("/student", getStudentHandler.Handle)
 
 	r.POST("/leaves", requestLeaveHandler.Handle)
+	r.PATCH("/leaves/:id", editLeaveRequestHandler.Handle)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.

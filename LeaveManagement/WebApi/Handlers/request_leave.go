@@ -35,7 +35,7 @@ func (h requestLeaveHandler) Handle(c *gin.Context) {
 	}
 
 	// TODO: Create a const for the magic string.
-	studentId := c.GetInt("studentId")
+	studentId := c.GetUint("studentId")
 
 	cmd := commands.RequestLeave{
 		StudentId: studentId,
