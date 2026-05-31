@@ -3,8 +3,11 @@ package usecases
 import (
 	"context"
 	"errors"
+	"fmt"
 	commands "hadhri/LeaveManagement/Application/Commands"
 	repositories "hadhri/LeaveManagement/Application/Ports/Repositories"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type EditLeaveRequest struct {
@@ -19,6 +22,10 @@ func (self EditLeaveRequest) Execute(ctx context.Context, cmd commands.EditLeave
 	e, err := self.repo.Get(ctx, cmd.Id, cmd.StudentId)
 
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return fmt.Errorf("Leave request does not exist.")
+		}
+
 		return errors.New("Failed to retrieve leave request.")
 	}
 
@@ -42,9 +49,5 @@ func (self EditLeaveRequest) Execute(ctx context.Context, cmd commands.EditLeave
 		return errors.New("Leave request cannot be edited.")
 	}
 
-	if err := self.repo.Update(ctx, *e); err != nil {
-		return err
-	}
-
-	return nil
+	return self.repo.Update(ctx, *e)
 }

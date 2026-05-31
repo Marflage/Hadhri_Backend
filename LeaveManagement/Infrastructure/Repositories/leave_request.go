@@ -68,7 +68,9 @@ func (self leaveRequest) Get(ctx context.Context, id uint, studentId uint) (*dom
 	sql := `
 		SELECT id, student_id, start_date, end_date, reason, status
 		FROM leave_requests
-		WHERE id = $1 AND student_id = $2
+		WHERE id = $1 
+		AND student_id = $2
+		AND status = 'pending'
 	`
 
 	type dbRow struct {
