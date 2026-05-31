@@ -15,7 +15,7 @@ func NewCancelLeaveRequestUseCase(repo repositories.ILeaveRequest) CancelLeaveRe
 }
 
 func (self CancelLeaveRequest) Execute(ctx context.Context, id uint, studentId uint) error {
-	exists, err := self.repo.Exists(ctx, id, studentId)
+	exists, err := self.repo.ExistsByStudentId(ctx, id, studentId)
 
 	if err != nil {
 		// TODO: Might need to return domain error.

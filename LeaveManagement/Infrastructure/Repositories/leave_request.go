@@ -101,9 +101,10 @@ func (self leaveRequest) Cancel(ctx context.Context, id uint, studentId uint) er
 	sql := `
 		UPDATE leave_requests
 		SET status = 'canceled',
-		status_changed_at = CURRENT_TIMESTAMP
+			status_changed_at = CURRENT_TIMESTAMP
 		WHERE id = $1
 		AND student_id = $2
+		AND status = 'pending'
 	`
 
 	_, err := self.pool.Exec(ctx, sql, id, studentId)
@@ -111,7 +112,7 @@ func (self leaveRequest) Cancel(ctx context.Context, id uint, studentId uint) er
 	return err
 }
 
-func (self leaveRequest) Exists(ctx context.Context, id uint, studentId uint) (*bool, error) {
+func (self leaveRequest) ExistsByStudentId(ctx context.Context, id uint, studentId uint) (*bool, error) {
 	sql := `
 		SELECT EXISTS(SELECT 1
 				FROM leave_requests
@@ -126,4 +127,35 @@ func (self leaveRequest) Exists(ctx context.Context, id uint, studentId uint) (*
 	}
 
 	return &exists, nil
+}
+
+func (self leaveRequest) Exists(ctx context.Context, id uint) (*bool, error) {
+	sql := `
+		SELECT EXISTS(SELECT 1
+				FROM leave_requests
+				WHERE id = $1
+				AND status = 'pending')
+	`
+
+	exists := false
+
+	if err := self.pool.QueryRow(ctx, sql, id).Scan(&exists); err != nil {
+		return nil, err
+	}
+
+	return &exists, nil
+}
+
+func (self leaveRequest) Approve(ctx context.Context, id uint) error {
+	sql := `
+		UPDATE leave_requests
+		SET status = 'approved',
+			status_changed_at = CURRENT_TIMESTAMP
+		WHERE id = $1
+		AND status = 'pending'
+	`
+
+	_, err := self.pool.Exec(ctx, sql, id)
+
+	return err
 }

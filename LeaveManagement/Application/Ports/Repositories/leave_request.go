@@ -11,5 +11,7 @@ type ILeaveRequest interface {
 	Update(ctx context.Context, entity domain.LeaveRequest) error
 	Get(ctx context.Context, id uint, studentId uint) (*domain.LeaveRequest, error)
 	Cancel(ctx context.Context, id uint, studentId uint) error
-	Exists(ctx context.Context, id uint, studentId uint) (*bool, error)
+	ExistsByStudentId(ctx context.Context, id uint, studentId uint) (*bool, error)
+	Exists(ctx context.Context, id uint) (*bool, error)
+	Approve(ctx context.Context, id uint) error
 }

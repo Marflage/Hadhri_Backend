@@ -3,7 +3,7 @@ package handlers
 import (
 	usecases "hadhri/LeaveManagement/Application/UseCases"
 	webapi "hadhri/LeaveManagement/WebApi"
-	constants "hadhri/LeaveManagement/WebApi/Handlers/Constants"
+	constants "hadhri/LeaveManagement/WebApi/Constants"
 	responses "hadhri/WebApi/Responses"
 	"net/http"
 
