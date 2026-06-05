@@ -63,3 +63,15 @@ CREATE TRIGGER update_attendance_updated_at
     ON attendance
     FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_sign_up_requests_updated_at
+    BEFORE UPDATE
+    ON sign_up_requests
+    FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_sign_up_requests_status_changed_at
+    BEFORE UPDATE
+    ON sign_up_requests
+    FOR EACH ROW
+EXECUTE FUNCTION update_status_changed_at_column();

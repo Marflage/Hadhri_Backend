@@ -119,13 +119,19 @@ CREATE TABLE leave_requests
     CONSTRAINT unique_student_leave_dates UNIQUE (student_id, start_date, end_date)
 );
 
-CREATE INDEX idx_leave_requests_student_dates
-    ON leave_requests (student_id, start_date DESC);
-
-CREATE INDEX idx_leave_requests_admin_pending
-    ON leave_requests (status, inserted_at ASC)
-    WHERE status = 'pending';
-
-CREATE INDEX idx_leave_requests_overlap_check
-    ON leave_requests (student_id, start_date, end_date)
-    WHERE status IN ('pending', 'approved');
+CREATE TABLE sign_up_requests
+(
+    id                INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    inserted_at       TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status            VARCHAR(20)  NOT NULL DEFAULT 'pending'
+        CONSTRAINT valid_status CHECK ( status IN ('pending', 'approved', 'declined', 'canceled')),
+    status_changed_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    full_name         VARCHAR(100) NOT NULL
+        CONSTRAINT full_name_check CHECK ( LENGTH(full_name) >= 2 ),
+    email             citext       NOT NULL UNIQUE
+        CONSTRAINT email_check CHECK ( email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    phone_number      VARCHAR(11)  NOT NULL UNIQUE
+        CONSTRAINT phone_number_check CHECK ( phone_number ~ '^[0-9]{11}$' ),
+    password_hash     VARCHAR(200) NOT NULL
+);
