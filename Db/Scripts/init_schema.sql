@@ -128,7 +128,7 @@ CREATE TABLE sign_up_requests
         CONSTRAINT valid_status CHECK ( status IN ('pending', 'approved', 'declined', 'canceled')),
     status_changed_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     full_name         VARCHAR(100) NOT NULL
-        CONSTRAINT full_name_check CHECK ( LENGTH(full_name) >= 2 ),
+        CONSTRAINT full_name_check CHECK ( LENGTH(full_name) >= 3 ),
     email             citext       NOT NULL UNIQUE
         CONSTRAINT email_check CHECK ( email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     phone_number      VARCHAR(11)  NOT NULL UNIQUE
