@@ -1,8 +1,7 @@
 package commands
 
 type AddStudent struct {
-	FirstName       string
-	LastName        string
+	FullName        string
 	Email           string
 	PhoneNumber     string
 	CourseId        int

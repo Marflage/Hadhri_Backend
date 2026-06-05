@@ -34,7 +34,7 @@ func (uc AddStudent) Execute(ctx context.Context, cmd commands.AddStudent) (*dto
 		return nil, err
 	}
 
-	studentPtr, err := student.NewStudent(cmd.FirstName, cmd.LastName, cmd.Email, cmd.PhoneNumber, string(tempPassword), coursePlanId, cmd.Semester)
+	studentPtr, err := student.NewStudent(cmd.FullName, cmd.Email, cmd.PhoneNumber, string(tempPassword), coursePlanId, cmd.Semester)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create new student: %w", err)

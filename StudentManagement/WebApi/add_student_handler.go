@@ -9,9 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO: Add the remaining binding tags.
 type addStudentRequest struct {
-	FirstName       string `json:"firstName" binding:"required"`
-	LastName        string `json:"lastName" binding:"required"`
+	Fullname        string `json:"fullName" binding:"required"`
 	Email           string `json:"email" binding:"required"`
 	PhoneNumber     string `json:"phoneNumber" binding:"required"`
 	CourseId        int    `json:"courseId" binding:"required"`
@@ -46,8 +46,7 @@ func (h addStudentHandler) Handle(c *gin.Context) {
 	// TODO: Sanitize request strings.
 
 	cmd := commands.AddStudent{
-		FirstName:       req.FirstName,
-		LastName:        req.LastName,
+		FullName:        req.Fullname,
 		Email:           req.Email,
 		PhoneNumber:     req.PhoneNumber,
 		CourseId:        req.CourseId,

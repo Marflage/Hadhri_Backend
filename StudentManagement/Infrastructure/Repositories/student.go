@@ -27,16 +27,15 @@ func (r studentRepo) SignUp(ctx context.Context, student student.Student) (*int,
 	defer tx.Rollback(ctx)
 
 	sql := `
-		INSERT INTO students(first_name, last_name, email, phone_number, password)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO students(full_name, email, phone_number, password_hash)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
 	`
 
 	var studentId int
 
 	if err := tx.QueryRow(ctx, sql,
-		student.GetFirstName(),
-		student.GetLastName(),
+		student.GetFullName(),
 		student.GetEmail(),
 		student.GetPhoneNumber(),
 		student.GetPassword(),

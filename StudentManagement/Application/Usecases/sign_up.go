@@ -44,7 +44,7 @@ func (uc SignUp) Execute(ctx context.Context, cmd commands.SignUp) (*string, err
 		return nil, fmt.Errorf("Failed to hash password: %w", err)
 	}
 
-	studentPtr, err := student.NewStudent(cmd.FirstName, cmd.LastName, cmd.Email, cmd.PhoneNumber, string(passwordHash), coursePlanId, cmd.Semester)
+	studentPtr, err := student.NewStudent(cmd.FullName, cmd.Email, cmd.PhoneNumber, string(passwordHash), coursePlanId, cmd.Semester)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create new student: %w", err)

@@ -1,8 +1,7 @@
 package commands
 
 type SignUp struct {
-	FirstName       string
-	LastName        string
+	FullName        string
 	Email           string
 	PhoneNumber     string
 	Password        string

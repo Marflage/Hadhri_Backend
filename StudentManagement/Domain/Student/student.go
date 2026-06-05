@@ -18,14 +18,10 @@ type Student struct {
 	enrollment  enrollment
 }
 
-func NewStudent(firstName string, lastName string, email string, phoneNumber string, password string, coursePlanId int, semester int) (*Student, error) {
+func NewStudent(fullName string, email string, phoneNumber string, password string, coursePlanId int, semester int) (*Student, error) {
 	student := Student{}
 
-	if err := student.setFirstName(firstName); err != nil {
-		return nil, err
-	}
-
-	if err := student.setLastName(lastName); err != nil {
+	if err := student.setFullname(fullName); err != nil {
 		return nil, err
 	}
 
@@ -54,12 +50,8 @@ func NewStudent(firstName string, lastName string, email string, phoneNumber str
 
 // Getters
 
-func (s *Student) GetFirstName() string {
+func (s *Student) GetFullName() string {
 	return s.firstName
-}
-
-func (s *Student) GetLastName() string {
-	return s.lastName
 }
 
 func (s *Student) GetEmail() string {
@@ -85,7 +77,7 @@ func (s *Student) GetSemester() int {
 // Setters
 // TODO: Sanitize input strings in all the methods.
 
-func (s *Student) setFirstName(value string) error {
+func (s *Student) setFullname(value string) error {
 	err := validateName(value)
 
 	if err != nil {
@@ -93,18 +85,6 @@ func (s *Student) setFirstName(value string) error {
 	}
 
 	s.firstName = value
-
-	return nil
-}
-
-func (s *Student) setLastName(value string) error {
-	err := validateName(value)
-
-	if err != nil {
-		return fmt.Errorf("Invalid last name.")
-	}
-
-	s.lastName = value
 
 	return nil
 }
@@ -153,32 +133,28 @@ func (s *Student) setPassword(value string) error {
 	return nil
 }
 
+// TODO: Attach these methods to the Student entity.
+// TODO: Add constraint for maximum length.
 func validateName(value string) error {
-	const msg string = "Invalid name."
-
 	if value == "" || len(value) < 3 {
-		return fmt.Errorf(msg)
+		return fmt.Errorf("Invalid name.")
 	}
 
 	return nil
 }
 
 func validateEmail(value string) error {
-	const msg string = "Invalid email."
-
 	// TODO: Implement regex-based robust email validation.
 	if value == "" || !strings.Contains(value, "@") {
-		return fmt.Errorf(msg)
+		return fmt.Errorf("Invalid email.")
 	}
 
 	return nil
 }
 
 func validatePhoneNumber(value string) error {
-	const msg string = "Invalid phone number."
-
 	if len(value) != 11 {
-		return fmt.Errorf(msg)
+		return fmt.Errorf("Invalid phone number.")
 	}
 
 	return nil

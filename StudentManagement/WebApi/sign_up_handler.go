@@ -10,8 +10,8 @@ import (
 )
 
 type signUpRequest struct {
-	FirstName       string `json:"firstName" binding:"required,noBlank,min=2,max=30"`
-	LastName        string `json:"lastName" binding:"required,noBlank,min=2,max=30"`
+	// TODO: Is not the noBlank validator redundant here for the string types?
+	FullName        string `json:"fullName" binding:"required,noBlank,min=2,max=30"`
 	Email           string `json:"email" binding:"required,email"`
 	PhoneNumber     string `json:"phoneNumber" binding:"required,numeric,len=11"`
 	Password        string `json:"password" binding:"required,min=8,max=30,noBlank"`
@@ -43,8 +43,7 @@ func (h signUpHandler) Handle(c *gin.Context) {
 	}
 
 	cmd := commands.SignUp{
-		FirstName:       req.FirstName,
-		LastName:        req.LastName,
+		FullName:        req.FullName,
 		Email:           req.Email,
 		PhoneNumber:     req.PhoneNumber,
 		Password:        req.Password,
