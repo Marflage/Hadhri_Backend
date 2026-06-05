@@ -69,14 +69,13 @@ CREATE TABLE attendance_statuses
 
 CREATE TABLE students
 (
-    id           SERIAL PRIMARY KEY,
-    inserted_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    first_name   VARCHAR(30)         NOT NULL CHECK ( LENGTH(first_name) >= 2 ),
-    last_name    VARCHAR(30)         NOT NULL CHECK ( LENGTH(last_name) >= 2 ),
-    email        VARCHAR(100) UNIQUE NOT NULL CHECK ( email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' ),
-    phone_number VARCHAR(11) UNIQUE  NOT NULL CHECK ( phone_number ~ '^[0-9]{11}$' ),
-    password     VARCHAR(100)         NOT NULL CHECK (LENGTH(password) >= 8)
+    id            INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    inserted_at   TIMESTAMPTZ         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMPTZ         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    full_name     VARCHAR(100)        NOT NULL CHECK ( LENGTH(full_name) >= 3 ),
+    email         VARCHAR(100) UNIQUE NOT NULL CHECK ( email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' ),
+    phone_number  VARCHAR(11) UNIQUE  NOT NULL CHECK ( phone_number ~ '^[0-9]{11}$' ),
+    password_hash VARCHAR(200)        NOT NULL
 );
 
 CREATE TABLE enrollments
