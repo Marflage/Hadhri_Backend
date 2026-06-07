@@ -30,7 +30,7 @@ func NewSignUpHandler(cs usecases.SignUp) signUpHandler {
 	return signUpHandler{uc: cs}
 }
 
-func (h signUpHandler) Handle(c *gin.Context) {
+func (self signUpHandler) Handle(c *gin.Context) {
 	var req signUpRequest
 	res := responses.ApiResponse[responses.Auth]{}
 
@@ -53,7 +53,7 @@ func (h signUpHandler) Handle(c *gin.Context) {
 		Semester:        req.Semester,
 	}
 
-	tokenPtr, err := h.uc.Execute(c.Request.Context(), cmd)
+	tokenPtr, err := self.uc.Execute(c.Request.Context(), cmd)
 
 	if err != nil {
 		res.Error = err.Error()

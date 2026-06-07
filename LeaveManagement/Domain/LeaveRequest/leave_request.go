@@ -208,6 +208,7 @@ func (self LeaveRequest) validateStartDateAndEndDate() error {
 }
 
 func (self LeaveRequest) validateStatus(status string) error {
+	// TODO: Add valid transition rules, such as approved or rejected cannot be transitioned to pending again. Define all the valid transition paths.
 	switch status {
 	case "pending", "approved", "rejected":
 		return nil

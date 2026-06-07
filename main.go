@@ -84,9 +84,9 @@ func main() {
 	getStudentHandler := adminWebapi.NewGetStudentHandler(getStudentUC)
 
 	// TODO: Rename for better organization.
-	studentRepo2 := stdntMgtRepositories.NewStudentRepo(pool)
+	signUpRequestRepo := stdntMgtRepositories.NewAccountActivationRequestRepo(pool)
 	tokenService := services.NewJwtService()
-	signUpUsecase := stdntMgtUsecases.NewSignUpUseCase(coursePlanQueryService2, studentRepo2, tokenService)
+	signUpUsecase := stdntMgtUsecases.NewSignUpUseCase(coursePlanQueryService2, signUpRequestRepo, tokenService)
 	signUpHandler := webapi.NewSignUpHandler(signUpUsecase)
 
 	// Leave Management

@@ -16,8 +16,8 @@ CREATE INDEX idx_leave_requests_overlap_check
     ON leave_requests (student_id, start_date, end_date)
     WHERE status IN ('pending', 'approved');
 
----------- sign_up_requests ----------
+---------- account_activation_requests ----------
 
-CREATE INDEX idx_sign_up_requests_status
-ON sign_up_requests (status)
+CREATE INDEX idx_account_activation_requests_status
+ON account_activation_requests (status)
 WHERE status = 'pending';

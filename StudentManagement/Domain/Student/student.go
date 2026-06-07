@@ -2,6 +2,7 @@ package student
 
 import (
 	"fmt"
+	domain "hadhri/StudentManagement/Domain"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -15,7 +16,7 @@ type Student struct {
 	email       string
 	phoneNumber string
 	password    string
-	enrollment  enrollment
+	enrollment  domain.Enrollment
 }
 
 func NewStudent(fullName string, email string, phoneNumber string, password string, coursePlanId int, semester int) (*Student, error) {
@@ -37,7 +38,7 @@ func NewStudent(fullName string, email string, phoneNumber string, password stri
 		return nil, err
 	}
 
-	enrollment, err := newEnrollment(coursePlanId, semester)
+	enrollment, err := domain.NewEnrollment(coursePlanId, semester)
 
 	if err != nil {
 		return nil, fmt.Errorf("Error creating enrollment: %w", err)
@@ -67,11 +68,11 @@ func (s *Student) GetPassword() string {
 }
 
 func (s *Student) GetCoursePlanId() int {
-	return s.enrollment.coursePlanId
+	return s.enrollment.CoursePlanId
 }
 
 func (s *Student) GetSemester() int {
-	return s.enrollment.semester
+	return s.enrollment.Semester
 }
 
 // Setters

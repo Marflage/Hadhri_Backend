@@ -118,19 +118,32 @@ CREATE TABLE leave_requests
     CONSTRAINT unique_student_leave_dates UNIQUE (student_id, start_date, end_date)
 );
 
-CREATE TABLE sign_up_requests
+CREATE EXTENSION IF NOT EXISTS citext;
+
+CREATE TABLE account_activation_requests
 (
-    id                INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id                INT GENERATED ALWAYS AS IDENTITY,
     inserted_at       TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    status            VARCHAR(20)  NOT NULL DEFAULT 'pending'
-        CONSTRAINT valid_status CHECK ( status IN ('pending', 'approved', 'declined', 'canceled')),
+    status            VARCHAR(20)  NOT NULL DEFAULT 'pending',
     status_changed_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    full_name         VARCHAR(100) NOT NULL
-        CONSTRAINT full_name_check CHECK ( LENGTH(full_name) >= 3 ),
-    email             citext       NOT NULL UNIQUE
-        CONSTRAINT email_check CHECK ( email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
-    phone_number      VARCHAR(11)  NOT NULL UNIQUE
-        CONSTRAINT phone_number_check CHECK ( phone_number ~ '^[0-9]{11}$' ),
-    password_hash     VARCHAR(200) NOT NULL
+    full_name         VARCHAR(100) NOT NULL,
+    email             citext       NOT NULL UNIQUE,
+    phone_number      VARCHAR(11)  NOT NULL UNIQUE,
+    password_hash     VARCHAR(200) NOT NULL,
+    course_plan_id    INT          NOT NULL,
+    semester          INT          NOT NULL,
+
+    CONSTRAINT pk_id PRIMARY KEY (id),
+
+    CONSTRAINT uq_email UNIQUE (email),
+    CONSTRAINT uq_phone_number UNIQUE (phone_number),
+
+    CONSTRAINT chk_valid_status CHECK ( status IN ('pending', 'approved', 'declined', 'canceled')),
+    CONSTRAINT chk_full_name CHECK ( LENGTH(full_name) >= 3 ),
+    CONSTRAINT chk_email CHECK ( email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    CONSTRAINT chk_phone_number CHECK ( phone_number ~ '^[0-9]{11}$' ),
+    CONSTRAINT chk_valid_semester CHECK ( semester > 0 ),
+
+    CONSTRAINT fk_course_plan_id FOREIGN KEY (course_plan_id) REFERENCES course_plans (id) ON DELETE RESTRICT
 );

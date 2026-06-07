@@ -64,14 +64,14 @@ CREATE TRIGGER update_attendance_updated_at
     FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_sign_up_requests_updated_at
+CREATE TRIGGER update_account_activation_requests_updated_at
     BEFORE UPDATE
-    ON sign_up_requests
+    ON account_activation_requests
     FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_sign_up_requests_status_changed_at
+CREATE TRIGGER update_account_activation_requests_status_changed_at
     BEFORE UPDATE
-    ON sign_up_requests
+    ON account_activation_requests
     FOR EACH ROW
 EXECUTE FUNCTION update_status_changed_at_column();
