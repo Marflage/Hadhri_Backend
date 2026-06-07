@@ -33,7 +33,7 @@ func NewAddStudentHandler(uc usecases.AddStudent) addStudentHandler {
 	return addStudentHandler{uc: uc}
 }
 
-func (h addStudentHandler) Handle(c *gin.Context) {
+func (self addStudentHandler) Handle(c *gin.Context) {
 	var req addStudentRequest
 	res := responses.ApiResponse[addStudentResponse]{}
 
@@ -55,7 +55,7 @@ func (h addStudentHandler) Handle(c *gin.Context) {
 		Semester:        req.Semester,
 	}
 
-	creds, err := h.uc.Execute(c.Request.Context(), cmd)
+	creds, err := self.uc.Execute(c.Request.Context(), cmd)
 
 	if err != nil {
 		res.Error = err.Error()

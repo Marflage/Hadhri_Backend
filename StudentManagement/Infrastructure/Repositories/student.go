@@ -17,8 +17,8 @@ func NewStudentRepo(pool *pgxpool.Pool) repositories.IStudent {
 }
 
 // TODO: A CTE can be used for atomicity and performance. Research.
-func (r studentRepo) SignUp(ctx context.Context, student student.Student) (*int, error) {
-	tx, err := r.pool.Begin(ctx)
+func (self studentRepo) SignUp(ctx context.Context, student student.Student) (*int, error) {
+	tx, err := self.pool.Begin(ctx)
 
 	if err != nil {
 		return nil, err

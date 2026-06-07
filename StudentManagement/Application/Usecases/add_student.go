@@ -21,8 +21,8 @@ func NewAddStudentUseCase(repo repositories.IStudent, queryService queryservices
 	return AddStudent{studentRepo: repo, coursePlanQueryService: queryService}
 }
 
-func (uc AddStudent) Execute(ctx context.Context, cmd commands.AddStudent) (*dtos.StudentCredentials, error) {
-	coursePlanId, err := uc.coursePlanQueryService.GetId(ctx, cmd.CourseId, cmd.ClassScheduleId, cmd.ClassSessionId, true, cmd.Semester)
+func (self AddStudent) Execute(ctx context.Context, cmd commands.AddStudent) (*dtos.StudentCredentials, error) {
+	coursePlanId, err := self.coursePlanQueryService.GetId(ctx, cmd.CourseId, cmd.ClassScheduleId, cmd.ClassSessionId, true, cmd.Semester)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to retrieve course plan ID: %w", err)
@@ -40,7 +40,7 @@ func (uc AddStudent) Execute(ctx context.Context, cmd commands.AddStudent) (*dto
 		return nil, fmt.Errorf("Failed to create new student: %w", err)
 	}
 
-	if _, err := uc.studentRepo.SignUp(ctx, *studentPtr); err != nil {
+	if _, err := self.studentRepo.SignUp(ctx, *studentPtr); err != nil {
 		// TODO: Transform infra errors into domain ones by checking error codes.
 		return nil, fmt.Errorf("Sign up failed: %w", err)
 	}
