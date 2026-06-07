@@ -1,4 +1,4 @@
-package webapi
+package handlers
 
 import (
 	commands "hadhri/StudentManagement/Application/Commands"
