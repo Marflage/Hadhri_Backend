@@ -3,19 +3,19 @@ package main
 import (
 	"context"
 	adminUsecases "hadhri/Admin/Application/UseCases"
-	infrastructure "hadhri/Admin/Infrastructure"
+	adminInfrastructure "hadhri/Admin/Infrastructure"
 	adminQueryservices "hadhri/Admin/Infrastructure/QueryServices"
 	adminWebapi "hadhri/Admin/WebApi"
 	orphanHandlers "hadhri/Handlers"
-	usecases "hadhri/LeaveManagement/Application/UseCases"
-	repositories "hadhri/LeaveManagement/Infrastructure/Repositories"
-	handlers "hadhri/LeaveManagement/WebApi/Handlers"
+	lvMgtUseCases "hadhri/LeaveManagement/Application/UseCases"
+	lvMgtRepositories "hadhri/LeaveManagement/Infrastructure/Repositories"
+	lvMgtHandlers "hadhri/LeaveManagement/WebApi/Handlers"
 	middleware "hadhri/Middleware"
-	stdntMgtUsecases "hadhri/StudentManagement/Application/Usecases"
-	queryservices "hadhri/StudentManagement/Infrastructure/QueryServices"
+	stdntMgtUseCases "hadhri/StudentManagement/Application/Usecases"
+	stdntMgtQueryServices "hadhri/StudentManagement/Infrastructure/QueryServices"
 	stdntMgtRepositories "hadhri/StudentManagement/Infrastructure/Repositories"
-	services "hadhri/StudentManagement/Infrastructure/Services"
-	webapi "hadhri/StudentManagement/WebApi"
+	stdntMgtServices "hadhri/StudentManagement/Infrastructure/Services"
+	stdntMgtHandlers "hadhri/StudentManagement/WebApi/Handlers"
 	"log"
 	"os"
 	"time"
@@ -50,25 +50,25 @@ func main() {
 		log.Fatalf("Failed to ping DB: %v", err)
 	}
 
-	courseRepo := infrastructure.NewCourseRepo(pool)
+	courseRepo := adminInfrastructure.NewCourseRepo(pool)
 	addCourseUC := adminUsecases.NewAddCourseUseCase(courseRepo)
 	getAllCoursesUC := adminUsecases.NewGetAllCoursesUseCase(courseRepo)
 	addCourseHandler := adminWebapi.NewAddCourseHandler(addCourseUC)
 	getAllCoursesHandler := adminWebapi.NewGetAllCoursesHandler(getAllCoursesUC)
 
-	classScheduleRepo := infrastructure.NewClassScheduleRepo(pool)
+	classScheduleRepo := adminInfrastructure.NewClassScheduleRepo(pool)
 	addClassScheduleUC := adminUsecases.NewAddClassScheduleUseCase(classScheduleRepo)
 	getAllClassSchedulesUC := adminUsecases.NewGetAllClassSchedulesUseCase(classScheduleRepo)
 	addClassScheduleHandler := adminWebapi.NewClassScheduleHandler(addClassScheduleUC)
 	getAllClassSchedulesHandler := adminWebapi.NewGetAllClassSchedulesHandler(getAllClassSchedulesUC)
 
-	classSessionRepo := infrastructure.NewClassSessionRepo(pool)
+	classSessionRepo := adminInfrastructure.NewClassSessionRepo(pool)
 	addClassSessionUC := adminUsecases.NewAddClassSessionUseCase(classSessionRepo)
 	getAllClassSessionsUC := adminUsecases.NewGetAllClassSessionsUseCase(classSessionRepo)
 	addClassSessionHandler := adminWebapi.NewAddClassSessionHandler(addClassSessionUC)
 	getAllClassSessionsHandler := adminWebapi.NewGetAllClassSessionsHandler(getAllClassSessionsUC)
 
-	coursePlanRepo := infrastructure.NewCoursePlanRepo(pool)
+	coursePlanRepo := adminInfrastructure.NewCoursePlanRepo(pool)
 	coursePlanQueryService := adminQueryservices.NewCoursePlanQueryService(pool)
 	addCoursePlanUC := adminUsecases.NewAddCoursePlanUseCase(coursePlanRepo)
 	getAllCoursePlansUC := adminUsecases.NewGetAllCoursePlansUseCase(coursePlanQueryService)
@@ -76,36 +76,36 @@ func main() {
 	getAllCoursePlansHandler := adminWebapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
 	studentRepo := stdntMgtRepositories.NewStudentRepo(pool)
-	coursePlanQueryService2 := queryservices.NewCoursePlanQueryService(pool)
+	coursePlanQueryService2 := stdntMgtQueryServices.NewCoursePlanQueryService(pool)
 	studentQueryService := adminQueryservices.NewStudentQueryService(pool)
-	addStudentUC := stdntMgtUsecases.NewAddStudentUseCase(studentRepo, coursePlanQueryService2)
-	addStudentHandler := webapi.NewAddStudentHandler(addStudentUC)
+	addStudentUC := stdntMgtUseCases.NewAddStudentUseCase(studentRepo, coursePlanQueryService2)
+	addStudentHandler := stdntMgtHandlers.NewAddStudentHandler(addStudentUC)
 	getStudentUC := adminUsecases.NewGetStudentUseCase(studentQueryService)
 	getStudentHandler := adminWebapi.NewGetStudentHandler(getStudentUC)
 
 	// TODO: Rename for better organization.
 	signUpRequestRepo := stdntMgtRepositories.NewAccountActivationRequestRepo(pool)
-	tokenService := services.NewJwtService()
-	signUpUsecase := stdntMgtUsecases.NewSignUpUseCase(coursePlanQueryService2, signUpRequestRepo, tokenService)
-	signUpHandler := webapi.NewSignUpHandler(signUpUsecase)
+	tokenService := stdntMgtServices.NewJwtService()
+	signUpUsecase := stdntMgtUseCases.NewSignUpUseCase(coursePlanQueryService2, signUpRequestRepo, tokenService)
+	signUpHandler := stdntMgtHandlers.NewSignUpHandler(signUpUsecase)
 
 	// Leave Management
-	leaveRequestRepo := repositories.NewLeaveRequestRepo(pool)
+	leaveRequestRepo := lvMgtRepositories.NewLeaveRequestRepo(pool)
 
-	requestLeaveUseCase := usecases.NewRequestLeaveUseCase(leaveRequestRepo)
-	requestLeaveHandler := handlers.NewRequestLeaveHandler(requestLeaveUseCase)
+	requestLeaveUseCase := lvMgtUseCases.NewRequestLeaveUseCase(leaveRequestRepo)
+	requestLeaveHandler := lvMgtHandlers.NewRequestLeaveHandler(requestLeaveUseCase)
 
-	editLeaveRequestUseCase := usecases.NewEditLeaveRequestUseCase(leaveRequestRepo)
-	editLeaveRequestHandler := handlers.NewEditLeaveHandler(editLeaveRequestUseCase)
+	editLeaveRequestUseCase := lvMgtUseCases.NewEditLeaveRequestUseCase(leaveRequestRepo)
+	editLeaveRequestHandler := lvMgtHandlers.NewEditLeaveHandler(editLeaveRequestUseCase)
 
-	cancelLeaveRequestUseCase := usecases.NewCancelLeaveRequestUseCase(leaveRequestRepo)
-	cancelLeaveRequestHandler := handlers.NewCancelLeaveRequestHandler(cancelLeaveRequestUseCase)
+	cancelLeaveRequestUseCase := lvMgtUseCases.NewCancelLeaveRequestUseCase(leaveRequestRepo)
+	cancelLeaveRequestHandler := lvMgtHandlers.NewCancelLeaveRequestHandler(cancelLeaveRequestUseCase)
 
-	approveLeaveRequestUseCase := usecases.NewApproveLeaveRequestUseCase(leaveRequestRepo)
-	approveLeaveRequestHandler := handlers.NewApproveLeaveRequestHandler(approveLeaveRequestUseCase)
+	approveLeaveRequestUseCase := lvMgtUseCases.NewApproveLeaveRequestUseCase(leaveRequestRepo)
+	approveLeaveRequestHandler := lvMgtHandlers.NewApproveLeaveRequestHandler(approveLeaveRequestUseCase)
 
-	rejectLeaveRequestUseCase := usecases.NewRejectLeaveRequestUseCase(leaveRequestRepo)
-	rejectLeaveRequestHandler := handlers.NewRejectLeaveRequest(rejectLeaveRequestUseCase)
+	rejectLeaveRequestUseCase := lvMgtUseCases.NewRejectLeaveRequestUseCase(leaveRequestRepo)
+	rejectLeaveRequestHandler := lvMgtHandlers.NewRejectLeaveRequest(rejectLeaveRequestUseCase)
 
 	r := gin.Default()
 
