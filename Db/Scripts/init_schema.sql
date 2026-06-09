@@ -90,13 +90,20 @@ CREATE TABLE students
 
 CREATE TABLE enrollments
 (
-    id             SERIAL PRIMARY KEY,
-    inserted_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    student_id     INT NOT NULL UNIQUE REFERENCES students (id),
-    course_plan_id INT NOT NULL REFERENCES course_plans (id),
-    enrolled_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    semester       INT NOT NULL
+    id             INT GENERATED ALWAYS AS IDENTITY,
+    inserted_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    student_id     INT         NOT NULL,
+    course_plan_id INT         NOT NULL,
+    enrolled_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    semester       INT         NOT NULL,
+
+    CONSTRAINT enrollments_pk PRIMARY KEY (id),
+
+    CONSTRAINT enrollments_student_id_unique UNIQUE (student_id),
+
+    CONSTRAINT enrollments_student_id_fk_students_id FOREIGN KEY (student_id) REFERENCES students (id) ON DELETE RESTRICT,
+    CONSTRAINT enrollments_course_plan_id_fk_course_plans_id FOREIGN KEY (course_plan_id) REFERENCES course_plans (id) ON DELETE RESTRICT
 );
 
 CREATE TABLE attendance
