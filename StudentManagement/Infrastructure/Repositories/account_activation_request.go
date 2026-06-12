@@ -83,6 +83,22 @@ func (self accountActivationRequest) Approve(ctx context.Context, id uint) error
 	return nil
 }
 
+func (self accountActivationRequest) Decline(ctx context.Context, id uint) error {
+	sql := `
+		UPDATE account_activation_requests
+		SET status            = 'declined',
+			status_changed_at = CURRENT_TIMESTAMP
+		WHERE id = $1
+		AND status = 'pending'
+	`
+
+	if _, err := self.pool.Exec(ctx, sql, id); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (self accountActivationRequest) get(ctx context.Context, id uint) (*dbmodels.AccountActivationRequest, error) {
 	sql := `
 		SELECT id,

@@ -99,6 +99,9 @@ func main() {
 	approveAccountActivationRequestUseCase := stdntMgtUseCases.NewApproveAccountActivationUseCase(accountActivationRequestRepo)
 	approveAccountActivationRequestHandler := stdntMgtHandlers.NewApproveAccountActivationHandler(approveAccountActivationRequestUseCase)
 
+	declineAccountActivationRequestUseCase := stdntMgtUseCases.NewDeclineAccountActivationUseCase(accountActivationRequestRepo)
+	declineAccountActivationRequestHandler := stdntMgtHandlers.NewDeclineAccountActivationHandler(declineAccountActivationRequestUseCase)
+
 	// Leave Management
 	leaveRequestRepo := lvMgtRepositories.NewLeaveRequestRepo(pool)
 
@@ -144,6 +147,7 @@ func main() {
 
 	r.POST("/sign-up", signUpHandler.Handle)
 	r.PATCH("/account-activation/:id/approve", approveAccountActivationRequestHandler.Handle)
+	r.PATCH("/account-activation/:id/decline", declineAccountActivationRequestHandler.Handle)
 
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.

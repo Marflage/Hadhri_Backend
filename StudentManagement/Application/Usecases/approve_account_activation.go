@@ -19,7 +19,7 @@ func (self ApproveAccountActivation) Execute(ctx context.Context, id uint) error
 	exists, err := self.repo.Exists(ctx, id)
 
 	if err != nil {
-		return fmt.Errorf("Failed to approve activation request: %w", err)
+		return fmt.Errorf("Failed to approve account activation request: %w", err)
 	}
 
 	if !*exists {
