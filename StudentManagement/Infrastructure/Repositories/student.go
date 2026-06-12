@@ -17,7 +17,7 @@ func NewStudentRepo(pool *pgxpool.Pool) repositories.IStudent {
 }
 
 // TODO: A CTE can be used for atomicity and performance. Research.
-func (self studentRepo) SignUp(ctx context.Context, student student.Student) (*int, error) {
+func (self studentRepo) SignUp(ctx context.Context, e student.Student) (*uint, error) {
 	tx, err := self.pool.Begin(ctx)
 
 	if err != nil {
@@ -32,26 +32,25 @@ func (self studentRepo) SignUp(ctx context.Context, student student.Student) (*i
 		RETURNING id
 	`
 
-	var studentId int
+	var studentId uint
 
 	if err := tx.QueryRow(ctx, sql,
-		student.GetFullName(),
-		student.GetEmail(),
-		student.GetPhoneNumber(),
-		student.GetPassword(),
-	).Scan(&studentId); err != nil {
+		e.GetFullName(),
+		e.GetEmail(),
+		e.GetPhoneNumber(),
+		e.GetPassword()).Scan(&studentId); err != nil {
 		return nil, err
 	}
 
 	sql2 := `
-		INSERT INTO enrollments(student_id, course_plan_id, semester)
-		VALUES ($1, $2, $3)
+		INSERT INTO enrollments(student_id, course_plan_id, enrolled_at, semester)
+		VALUES ($1, $2, CURRENT_TIMESTAMP, $3)
 	`
 
 	if _, err := tx.Exec(ctx, sql2,
 		studentId,
-		student.GetCoursePlanId(),
-		student.GetSemester()); err != nil {
+		e.GetCoursePlanId(),
+		e.GetSemester()); err != nil {
 		return nil, err
 	}
 

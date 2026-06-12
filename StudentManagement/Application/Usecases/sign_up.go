@@ -42,7 +42,7 @@ func (self SignUp) Execute(ctx context.Context, cmd commands.SignUp) (*string, e
 		return nil, fmt.Errorf("Failed to request account activation: %w", err)
 	}
 
-	id, err := self.accountActivationRequestRepo.Store(ctx, *e)
+	id, err := self.accountActivationRequestRepo.Save(ctx, *e)
 
 	if err != nil {
 		// TODO: Transform infra errors into domain ones by checking error codes.

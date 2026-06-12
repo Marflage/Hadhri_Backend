@@ -67,6 +67,8 @@ CREATE TABLE attendance_statuses
 
 ---------- Transactional Tables ----------
 
+CREATE EXTENSION IF NOT EXISTS citext;
+
 CREATE TABLE students
 (
     id            INT          NOT NULL,
@@ -163,4 +165,17 @@ CREATE TABLE account_activation_requests
     CONSTRAINT chk_valid_semester CHECK ( semester > 0 ),
 
     CONSTRAINT fk_course_plan_id FOREIGN KEY (course_plan_id) REFERENCES course_plans (id) ON DELETE RESTRICT
+);
+
+CREATE TABLE student_account_activation_approvals
+(
+    student_id  INT         NOT NULL,
+    applied_at  TIMESTAMPTZ NOT NULL,
+    approved_at TIMESTAMPTZ NOT NULL,
+
+    CONSTRAINT student_account_activation_approvals_pk PRIMARY KEY (student_id),
+
+    CONSTRAINT student_account_activation_approvals_fk_students_id FOREIGN KEY (student_id) REFERENCES students (id) ON DELETE RESTRICT,
+
+    CONSTRAINT student_account_activation_approvals_chk_valid_approved_at CHECK ( approved_at >= applied_at )
 );

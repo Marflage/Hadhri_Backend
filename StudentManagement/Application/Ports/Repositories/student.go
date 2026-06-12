@@ -6,5 +6,5 @@ import (
 )
 
 type IStudent interface {
-	SignUp(ctx context.Context, student student.Student) (*int, error)
+	SignUp(ctx context.Context, student student.Student) (*uint, error)
 }

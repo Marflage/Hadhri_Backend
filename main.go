@@ -75,19 +75,29 @@ func main() {
 	addCoursePlanHandler := adminWebapi.NewAddCoursePlanHandler(addCoursePlanUC)
 	getAllCoursePlansHandler := adminWebapi.NewGetAllCoursePlansHandler(getAllCoursePlansUC)
 
-	studentRepo := stdntMgtRepositories.NewStudentRepo(pool)
-	coursePlanQueryService2 := stdntMgtQueryServices.NewCoursePlanQueryService(pool)
 	studentQueryService := adminQueryservices.NewStudentQueryService(pool)
-	addStudentUC := stdntMgtUseCases.NewAddStudentUseCase(studentRepo, coursePlanQueryService2)
-	addStudentHandler := stdntMgtHandlers.NewAddStudentHandler(addStudentUC)
+
 	getStudentUC := adminUsecases.NewGetStudentUseCase(studentQueryService)
 	getStudentHandler := adminWebapi.NewGetStudentHandler(getStudentUC)
 
 	// TODO: Rename for better organization.
-	signUpRequestRepo := stdntMgtRepositories.NewAccountActivationRequestRepo(pool)
+
+	// Student Management
 	tokenService := stdntMgtServices.NewJwtService()
-	signUpUsecase := stdntMgtUseCases.NewSignUpUseCase(coursePlanQueryService2, signUpRequestRepo, tokenService)
-	signUpHandler := stdntMgtHandlers.NewSignUpHandler(signUpUsecase)
+
+	studentRepo := stdntMgtRepositories.NewStudentRepo(pool)
+	accountActivationRequestRepo := stdntMgtRepositories.NewAccountActivationRequestRepo(pool)
+
+	coursePlanQueryService2 := stdntMgtQueryServices.NewCoursePlanQueryService(pool)
+
+	signUpUseCase := stdntMgtUseCases.NewSignUpUseCase(coursePlanQueryService2, accountActivationRequestRepo, tokenService)
+	signUpHandler := stdntMgtHandlers.NewSignUpHandler(signUpUseCase)
+
+	addStudentUC := stdntMgtUseCases.NewAddStudentUseCase(studentRepo, coursePlanQueryService2)
+	addStudentHandler := stdntMgtHandlers.NewAddStudentHandler(addStudentUC)
+
+	approveAccountActivationRequestUseCase := stdntMgtUseCases.NewApproveAccountActivationUseCase(accountActivationRequestRepo)
+	approveAccountActivationRequestHandler := stdntMgtHandlers.NewApproveAccountActivationHandler(approveAccountActivationRequestUseCase)
 
 	// Leave Management
 	leaveRequestRepo := lvMgtRepositories.NewLeaveRequestRepo(pool)
@@ -132,9 +142,11 @@ func main() {
 	r.PATCH("/leaves/:id/approve", approveLeaveRequestHandler.Handle)
 	r.PATCH("/leaves/:id/reject", rejectLeaveRequestHandler.Handle)
 
+	r.POST("/sign-up", signUpHandler.Handle)
+	r.PATCH("/account-activation/:id/approve", approveAccountActivationRequestHandler.Handle)
+
 	// TODO: Create a middleware to handle exceptions.
 	// TODO: Create a middleware to format errors and send them in response.
-	r.POST("/sign-up", signUpHandler.Handle)
 	r.POST("/sign-in", orphanHandlers.SignIn)
 
 	// TODO: Create an authentication middleware.
